@@ -3,6 +3,8 @@
   <arg name="load_robot_description" default="false"/>
   <arg name="limited" default="false"/>
 
+  <arg name="real" default="true"/>
+
   <!-- The name of the parameter under which the URDF is loaded -->
   <arg name="robot_description" default="robot_description"/>
 

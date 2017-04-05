@@ -1,15 +1,15 @@
-flir_ptu_pan_controller:
-  type: position_controllers/JointPositionController
-  joint: husky_ptu_pan
-  pid:
-    p: 0
-    i: 0
-    d: 0
 
-flir_ptu_tilt_controller:
-  type: position_controllers/JointPositionController
-  joint: husky_ptu_tilt
-  pid:
-    p: 0
-    i: 0
-    d: 0.0
+flir_ptu_controller:
+  type: position_controllers/JointTrajectoryController
+  topic: ptu
+  joints: 
+     - husky_ptu_pan
+     - husky_ptu_tilt
+  constraints:
+      goal_time: 0.6
+      stopped_velocity_tolerance: 0.5
+      husky_ptu_pan: {trajectory: 0.1, goal: 0.1}
+      husky_ptu_tilt: {trajectory: 0.1, goal: 0.1}
+  stop_trajectory_duration: 0.5
+  state_publish_rate:  25
+  action_monitor_rate: 10
