@@ -9,6 +9,13 @@ controller_list:
       default: true
       type: FollowJointTrajectory
       joints: [r_ur5_arm_shoulder_pan_joint, r_ur5_arm_shoulder_lift_joint, r_ur5_arm_elbow_joint, r_ur5_arm_wrist_1_joint, r_ur5_arm_wrist_2_joint, r_ur5_arm_wrist_3_joint]
+<<<<<<< HEAD
+    - name: flir_ptu_controller
+      action_ns: follow_joint_trajectory
+      default: true
+      type: FollowJointTrajectory
+      joints: [husky_ptu_pan, husky_ptu_tilt]
+=======
     - name: flir_ptu_pan_controller
       action_ns: follow_joint_trajectory
       default: true
@@ -19,4 +26,4 @@ controller_list:
       default: true
       type: FollowJointTrajectory
       joints: [husky_ptu_tilt]
-
+>>>>>>> 2aab239... Added ptu
