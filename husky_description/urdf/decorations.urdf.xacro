@@ -43,7 +43,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
       <child link="top_chassis_link" />
     </joint>
 
-    <xacro:if value="$(optenv HUSKY_USER_RAILS true)">
+    <xacro:if value="$(optenv HUSKY_USER_RAILS false)">
 	    <!-- Spawn user rails -->
 	    <link name="user_rail_link">
 	      <visual>
@@ -94,9 +94,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     </joint>
 
 
-    <xacro:if value="$(optenv DUAL_ARM_BULKHEAD false)">
+    <xacro:if value="$(optenv DUAL_ARM_BULKHEAD true)">
         <!-- Spawn the bulkhead -->
-      <link name="dual_arm_bulkhead_link">
+        <link name="dual_arm_bulkhead_link">
         <visual>
           <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>
@@ -107,14 +107,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
           <origin xyz="0 0 0" rpy="0 0 0"/>
            <geometry>
             <mesh filename="package://husky_description/meshes/dual_arm_bulkhead.dae" />
-           </geometry>
+          </geometry>
         </collision>
-        <inertial>
-          <mass value="9.832"/>
-          <origin xyz="0 0 0" />
-          <inertia ixx="0.177184" ixy="-0.0045887" ixz="0.003812" iyy="0.752238" iyz="0.004194" izz="0.1376" />
-        </inertial>
-      </link>
+          <inertial>
+            <mass value="9.832"/>
+            <origin xyz="0 0 0" />
+            <inertia ixx="0.177184" ixy="-0.0045887" ixz="0.003812" iyy="0.752238" iyz="0.004194" izz="0.1376" />
+          </inertial>
+        </link>
+
   
       <!-- Attach bulkhead -->
       <joint name="dual_arm_bulkhead_joint" type="fixed">
@@ -125,7 +126,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
     </xacro:if>
 
-    <xacro:if value="$(optenv HUSKY_TOP_PLATE_ENABLED true)">
+    <xacro:if value="$(optenv HUSKY_TOP_PLATE_ENABLED false)">
       <!-- Spawn the top plate -->
       <link name="top_plate_link">
         <visual>

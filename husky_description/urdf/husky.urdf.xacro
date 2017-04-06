@@ -91,7 +91,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <link name="inertial_link">
       <inertial>
         <mass value="46.034"/>
-        <origin xyz="-0.08748 -0.00085 0.09947" />
+        <origin xyz="-0.00065 -0.085 0.062" />
         <inertia ixx="0.6022" ixy="-0.02364" ixz="-0.1197" iyy="1.7386" iyz="-0.001544" izz="2.0296" />
       </inertial>
     </link>
@@ -129,7 +129,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
     <xacro:husky_decorate />
 
-    <xacro:if value="$(optenv FLIR_PTU_ENABLED false)">
+    <xacro:if value="$(optenv FLIR_PTU_ENABLED true)">
 
           <xacro:ptu_d46 name="husky_ptu"/>
           <!-- Connect PTU to Husky bulkhead -->
@@ -141,7 +141,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
     </xacro:if>
 
-    <xacro:if value="$(optenv HUSKY_DUAL_UR5_ENABLED false)">
+    <xacro:if value="$(optenv HUSKY_DUAL_UR5_ENABLED true)">
 
         <xacro:ur5_robot prefix="l_ur5_arm_" joint_limited="true"/>
         <xacro:ur5_robot prefix="r_ur5_arm_" joint_limited="true"/> 
@@ -174,7 +174,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
            <origin xyz="0 0 0" rpy="0 1.57 0"/>
         </xacro:robotiq_fts300> 
 
-        <xacro:if value="$(optenv ROBOTIQ_GRIPPERS_ENABLED false)">
+        <xacro:if value="$(optenv ROBOTIQ_GRIPPERS_ENABLED true)">
 
             <xacro:robotiq_hand prefix="l_" reflect="1" parent="l_robotiq_fts300_fts_toolside">
                 <origin xyz="0 0 0.08" rpy="1.57 0 0"/>
