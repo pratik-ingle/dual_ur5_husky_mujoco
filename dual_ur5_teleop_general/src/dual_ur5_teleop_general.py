@@ -36,57 +36,178 @@
 
 import sys
 import rospy
-import os
 from moveit_commander import RobotCommander, PlanningSceneInterface, MoveGroupCommandInterpreter, roscpp_initialize, roscpp_shutdown
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import Joy
+from robotiq_s_model_articulated_msgs.msg import SModelRobotOutput
 
 interpreter = None
+left_arm = False
+right_arm = False
+
+gripper_publisher = None
+gripper_cmd = None
+
+left_gripper_closed = False
+right_gripper_closed = False
+
+def genCommand(char, command):
+    """Update the command according to the character entered by the user."""    
+        
+    if char == 'a':
+        command = SModelRobotOutput();
+        command.rACT = 1
+        command.rGTO = 1
+        command.rSPA = 255
+        command.rFRA = 150
+
+    if char == 'r':
+        command = SModelRobotOutput();
+        command.rACT = 0
+
+    if char == 'c':
+        command.rPRA = 255
+
+    if char == 'o':
+        command.rPRA = 0
+
+    if char == 'b':
+        command.rMOD = 0
+        
+    if char == 'p':
+        command.rMOD = 1
+        
+    if char == 'w':
+        command.rMOD = 2
+        
+    if char == 's':
+        command.rMOD = 3
+
+    #If the command entered is a int, assign this value to rPRA
+    try: 
+        command.rPRA = int(char)
+        if command.rPRA > 255:
+            command.rPRA = 255
+        if command.rPRA < 0:
+            command.rPRA = 0
+    except ValueError:
+        pass                    
+        
+    if char == 'f':
+        command.rSPA += 25
+        if command.rSPA > 255:
+            command.rSPA = 255
+            
+    if char == 'l':
+        command.rSPA -= 25
+        if command.rSPA < 0:
+            command.rSPA = 0
+
+            
+    if char == 'i':
+        command.rFRA += 25
+        if command.rFRA > 255:
+            command.rFRA = 255
+            
+    if char == 'd':
+        command.rFRA -= 25
+        if command.rFRA < 0:
+            command.rFRA = 0
+
+    return command
 
 def joy_callback(msg):
     axes = msg.axes
-    # Only need to press once to change mode. do a beep.
+    buttons = msg.buttons
+    global left_arm
+    global right_arm
+    global left_gripper_closed
+    global right_gripper_closed
+    global gripper_cmd
+    dx = 0.1
+    # Dont do anything if the joy command is set to drive.
+    if (buttons[0] > 0) or (buttons[2] > 0):
+        return False
+
+
+    # Changing arm control modes. Only one arm controlled at a time.
     if axes[2] < 0:
         interpreter.execute("use left_arm")
-        os.system("beep -f 555 -l 460")
+        left_arm = True
+        right_arm = False
+        rospy.loginfo("MODE: LEFT ARM CONTROL MODE")
+        return True
     if axes[5] < 0:
         interpreter.execute("use right_arm")
-        os.system("beep -f 555 -l 460")
+        right_arm = True
+        left_arm = False
+        rospy.loginfo("MODE: RIGHT ARM CONTROL MODE")
+        return True
+    # Left trigger pressed, send gripper close
+    if buttons[4]:
+        if left_gripper_closed:
+            open_gripper = genCommand("o", gripper_cmd)
+            gripper_publisher.publish(open_gripper)
+            rospy.sleep(2)
+            rospy.loginfo("Opening left gripper")
+            left_gripper_closed = False
+        else:
+            close_gripper = genCommand("c", gripper_cmd)
+            gripper_publisher.publish(close_gripper)
+            rospy.sleep(2)
+            left_gripper_closed = True
+            rospy.loginfo("Closing left gripper")
+        return True
 
+    if buttons[5]:
+        if right_gripper_closed:
+            rospy.loginfo("Opening right gripper")
+        else:
+            rospy.loginfo("Closing right gripper")
+        return True
+
+    left_joy_up = axes[1] > 0
+    left_joy_down = axes[1] < 0
+    left_joy_left = axes[0] > 0
+    left_joy_right = axes[0] < 0
+
+    right_joy_up = axes[4] > 0
+    right_joy_down = axes[4] < 0
 
     # Check if LT is pressed
-    if axes[2] < 0 and (axes[1] is not 0):
+    if left_arm:
         # Left arm is pressed.
-        if axes[1] > 0:
-            move_left_arm("forward", axes[1])
-        if axes[1] < 0:
-            move_left_arm("back", axes[1])
-        
-    if axes[5] < 0 and (axes[4] is not 0):
+        if left_joy_up:
+            move_arm("forward", dx)
+        if left_joy_down:
+            move_arm("back", dx)
+        if left_joy_left:
+            move_arm("left", dx)
+        if left_joy_right:
+            move_arm("right", dx)
+        if right_joy_up:
+            move_arm("up", dx)
+        if right_joy_down:
+            move_arm("down", dx)
+    elif right_arm:
         # Right arm is pressed
-        if axes[4] > 0:
-            move_right_arm("forward", axes[4])
-        if axes[4] < 0:
-            move_right_arm("back", axes[4])
-    if axes[5] < 0 and (axes[0] < 0):
-        # Right arm goes left
-        global interpreter
+        if left_joy_up:
+            move_arm("forward", dx)
+        if left_joy_down:
+            move_arm("back", dx)
+        if left_joy_left:
+            move_arm("left", dx)
+        if left_joy_right:
+            move_arm("right", dx)
+        if right_joy_up:
+            move_arm("up", dx)
+        if right_joy_down:
+            move_arm("down", dx)
 
-def move_right_arm(direction, distance):
+def move_arm(direction, distance):
     global interpreter
-    rospy.loginfo("Moving right arm")
-    if direction is "forward":
-        interpreter.execute("go forward " + str(distance))
-    if direction is "back":
-        interpreter.execute("go back " + str(distance))
-
-def move_left_arm(direction, distance):
-    global interpreter
-    rospy.loginfo("Moving left arm")
-    if direction is "forward":
-        interpreter.execute("go forward " + str(distance))
-    if direction is "back":
-        interpreter.execute("go back " + str(distance))
+    rospy.loginfo("Moving right arm " + direction + " " + str(distance))
+    interpreter.execute("go " + direction + " " + str(distance))
 
 if __name__=='__main__':
 
@@ -104,6 +225,14 @@ if __name__=='__main__':
     interpreter = MoveGroupCommandInterpreter()
     interpreter.execute("use left_arm")
 
+    global gripper_publisher
+    global gripper_cmd
+
+    gripper_publisher = rospy.Publisher("/SModelRobotOutput", SModelRobotOutput)
+    gripper_cmd = SModelRobotOutput()
+    gripper_cmd = genCommand("a", gripper_cmd)
+
+    
     # clean the scene
     # publish a demo scene
    # p = PoseStamped()
