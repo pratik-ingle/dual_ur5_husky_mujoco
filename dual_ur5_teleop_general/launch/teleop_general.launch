@@ -1,0 +1,12 @@
+<launch>
+
+  <include file="$(find teleop_twist_joy)/launch/teleop.launch"/>
+
+  <include file="$(find husky_dual_ur5_moveit_config)/launch/husky_dual_ur5_planning_execution.launch">
+      <arg name="real" value="true"/>
+  </include>
+
+  <!-- Launches the teleop general which maps the joystick commands to the base, the grippers, the arms, the ptu -->
+  <node name="dual_ur5_teleop_general" type="dual_ur5_teleop_general.py" pkg="dual_ur5_teleop_general"/>
+
+</launch>

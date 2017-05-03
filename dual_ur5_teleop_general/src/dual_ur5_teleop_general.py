@@ -64,6 +64,45 @@ right_gripper_rotation = 0
 left_arm_client = None
 right_arm_client = None
 
+LEFT_JOINT_NAMES = ['l_ur5_arm_shoulder_pan_joint', 'l_ur5_arm_shoulder_lift_joint', 'l_ur5_arm_elbow_joint', 'l_ur5_arm_wrist_1_joint', 'l_ur5_arm_wrist_2_joint', 'l_ur5_arm_wrist_3_joint']
+RIGHT_JOINT_NAMES = ['r_ur5_arm_shoulder_pan_joint', 'r_ur5_arm_shoulder_lift_joint', 'r_ur5_arm_elbow_joint', 'r_ur5_arm_wrist_1_joint', 'r_ur5_arm_wrist_2_joint', 'r_ur5_arm_wrist_3_joint']
+Q1 = [1.57, -1.57, 0, -1.57, 0, 0]
+Q2 = [-1.57, -1.57, 0, -1.57, 0, 0]
+Q3 = [-1.57, -0.1745, -2.79, -1.57, 0, 0]
+
+
+def move_home():
+    global interpreter
+    group = interpreter.get_active_group()
+    global left_arm_client
+    global right_arm_client
+    j = group.get_joints()
+    JOINTS = None
+    client = None
+    if j[0][0] is "l": 
+        client = left_arm_client
+        JOINTS = LEFT_JOINT_NAMES
+    elif j[0][0] is "r":
+        client = right_arm_client
+        JOINTS = RIGHT_JOINT_NAMES
+
+    g = FollowJointTrajectoryGoal()
+    g.trajectory = JointTrajectory()
+    g.trajectory.joint_names = JOINTS 
+    g.trajectory.points = [
+        JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0]*6, time_from_start=rospy.Duration(0.0)),
+        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(2.0)), 
+        JointTrajectoryPoint(positions=Q2, velocities=[0]*6, time_from_start=rospy.Duration(3.0)),
+        JointTrajectoryPoint(positions=Q3, velocities=[0]*6, time_from_start=rospy.Duration(6.0))]
+    client.send_goal(g)
+    rospy.loginfo("Moved arm to home position")
+    try:
+        client.wait_for_result()
+    except KeyboardInterrupt:
+        client.cancel_goal()
+        raise
+
+
 def genCommand(char, command):
     """Update the command according to the character entered by the user."""    
         
@@ -196,6 +235,10 @@ def joy_callback(msg):
     # Dont do anything if the joy command is set to drive.
     if (buttons[0] > 0) or (buttons[2] > 0):
         return False
+
+    if buttons[6]:
+        # stow arms
+        move_home()
 
     # Changing arm control modes. Only one arm controlled at a time.
     if axes[2] < 0:
@@ -344,28 +387,5 @@ if __name__=='__main__':
     right_arm_client.wait_for_server()
     rospy.loginfo("Connected to arm action servers")
     
-    # clean the scene
-    # publish a demo scene
-   # p = PoseStamped()
-   # p.header.frame_id = robot.get_planning_frame()
-   # p.pose.position.x = 0.7
-   # p.pose.position.y = -0.4
-   # p.pose.position.z = 0.85
-   # p.pose.orientation.w = 1.0
-   # scene.add_box("pole", p, (0.3, 0.1, 1.0))
-
-    #p.pose.position.y = -0.2
-    #p.pose.position.z = 0.175
-    #scene.add_box("table", p, (0.5, 1.5, 0.35))
-
-    #p.pose.position.x = 0.6
-    #p.pose.position.y = -0.7
-    #p.pose.position.z = 0.5
-    #scene.add_box("part", p, (0.15, 0.1, 0.3))
-
-
-    # pick an object
-    #robot.right_arm.pick("part")
-
     rospy.spin()
 
