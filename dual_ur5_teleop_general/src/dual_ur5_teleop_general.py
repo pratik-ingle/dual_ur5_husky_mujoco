@@ -38,15 +38,19 @@ import sys
 import rospy
 from moveit_commander import RobotCommander, PlanningSceneInterface, MoveGroupCommandInterpreter, roscpp_initialize, roscpp_shutdown
 from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Pose
 from sensor_msgs.msg import Joy
 from robotiq_s_model_articulated_msgs.msg import SModelRobotOutput
 from trajectory_msgs.msg import *
 from control_msgs.msg import *
 import actionlib
+import tf
 
 interpreter = None
 left_arm = False
 right_arm = False
+gripper_mode = False
+ptu_mode = False
 
 gripper_publisher = None
 gripper_cmd = None
@@ -142,6 +146,7 @@ def rotate_gripper(direction, which_gripper):
     if which_gripper is "right":
         g.trajectory.joint_names = RIGHT_ARM_JOINT_NAMES
     
+
     global interpreter
     current_group = interpreter.get_active_group()
     joints = current_group.get_current_joint_values()
@@ -151,15 +156,25 @@ def rotate_gripper(direction, which_gripper):
     global right_arm_client
 
     # use the direction to move the joint value up or down. it's in radians. so should always figure itself out? or maybe needed to be bounded?
-    if direction is "left":
+    if direction is "rotate_left":
         # Decrease the joint position in radians.
         val = joints[5]
         val += abs(rotation_step)
         joints[5] = val    
-    if direction is "right":
+    if direction is "rotate_right":
         val = joints[5]
         val = val - abs(rotation_step)
         joints[5] = val
+
+
+    if direction is "pan_left":
+        rospy.loginfo("TODO")
+    if direction is "pan_right":
+        rospy.loginfo("TODO")
+    if direction is "pan_up":
+        rospy.loginfo("TODO")
+    if direction is "pan_down":
+        rospy.loginfo("TODO")
 
     current_group.set_joint_value_target(joints)
     current_group.go()
@@ -174,11 +189,13 @@ def joy_callback(msg):
     global left_gripper_closed
     global right_gripper_closed
     global gripper_cmd
+    global gripper_mode
+    global ptu_mode
+
     dx = 0.1
     # Dont do anything if the joy command is set to drive.
     if (buttons[0] > 0) or (buttons[2] > 0):
         return False
-
 
     # Changing arm control modes. Only one arm controlled at a time.
     if axes[2] < 0:
@@ -214,37 +231,45 @@ def joy_callback(msg):
         else:
             rospy.loginfo("Closing right gripper")
         return True
+    if buttons[1]:
+        if not gripper_mode:
+            gripper_mode = True
+        else:
+            gripper_mode = False
 
     left_joy_up = axes[1] > 0
     left_joy_down = axes[1] < 0
     left_joy_left = axes[0] > 0
     left_joy_right = axes[0] < 0
 
+    left_joy_directions = [left_joy_up, left_joy_down, left_joy_left, left_joy_right]
+
     right_joy_up = axes[4] > 0
     right_joy_down = axes[4] < 0
     right_joy_left = axes[3] > 0
     right_joy_right = axes[3] < 0
 
+    right_joystick_pressed = (buttons[10] == 1)
+ 
     # Check if LT is pressed
-    if left_arm:
+    if left_arm and not gripper_mode:
         # Left arm is pressed.
-        if left_joy_up:
+        if right_joystick_pressed:
+            orient_gripper(left_joy_directions)
+            return True
+        elif left_joy_up:
             move_arm("forward", dx)
-        if left_joy_down:
+        elif left_joy_down:
             move_arm("back", dx)
-        if left_joy_left:
+        elif left_joy_left:
             move_arm("left", dx)
-        if left_joy_right:
+        elif left_joy_right:
             move_arm("right", dx)
-        if right_joy_up:
+        elif right_joy_up:
             move_arm("up", dx)
-        if right_joy_down:
+        elif right_joy_down:
             move_arm("down", dx)
-        if right_joy_left:
-            rotate_gripper("left", "left")
-        if right_joy_right:
-            rotate_gripper("right", "left")
-    elif right_arm:
+    elif right_arm and not gripper_mode:
         # Right arm is pressed
         if left_joy_up:
             move_arm("forward", dx)
@@ -258,11 +283,28 @@ def joy_callback(msg):
             move_arm("up", dx)
         if right_joy_down:
             move_arm("down", dx)
-        if right_joy_left:
-            rotate_gripper("left", "right")
-        if right_joy_right:
-            rotate_gripper("right", "right")
+    elif gripper_mode:
+        arm = ""
+        if left_arm:
+            arm = "left"
+        elif right_arm:
+            arm = "right"
 
+        if left_joy_left:
+            rotate_gripper("pan_left", arm)
+        if left_joy_right:
+            rotate_gripper("pan_right", arm)
+        if left_joy_up:
+            rotate_gripper("pan_up", arm)
+        if left_joy_down:
+            rotate_gripper("pan_down", arm)
+        if right_joy_left:
+            rotate_gripper("rotate_left", arm)
+        if right_joy_right:
+            rotate_gripper("rotate_right", arm)
+    elif ptu_mode:
+        return True
+ 
 def move_arm(direction, distance):
     global interpreter
     rospy.loginfo("Moving right arm " + direction + " " + str(distance))
