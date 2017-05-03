@@ -40,6 +40,9 @@ from moveit_commander import RobotCommander, PlanningSceneInterface, MoveGroupCo
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import Joy
 from robotiq_s_model_articulated_msgs.msg import SModelRobotOutput
+from trajectory_msgs.msg import *
+from control_msgs.msg import *
+import actionlib
 
 interpreter = None
 left_arm = False
@@ -50,6 +53,12 @@ gripper_cmd = None
 
 left_gripper_closed = False
 right_gripper_closed = False
+
+left_gripper_rotation = 0
+right_gripper_rotation = 0
+
+left_arm_client = None
+right_arm_client = None
 
 def genCommand(char, command):
     """Update the command according to the character entered by the user."""    
@@ -116,6 +125,47 @@ def genCommand(char, command):
 
     return command
 
+def rotate_gripper(direction, which_gripper):
+    global left_gripper_rotation
+    global right_gripper_rotation
+
+    rotation_step = 0.205
+    
+    g = FollowJointTrajectoryGoal()
+    g.trajectory = JointTrajectory()
+    
+    LEFT_ARM_JOINT_NAMES = ['l_ur5_arm_shoulder_pan_joint', 'l_ur5_arm_shoulder_lift_joint', 'l_ur5_arm_elbow_joint', 'l_ur5_arm_wrist_1_joint', 'l_ur5_arm_wrist_2_joint', 'l_ur5_arm_wrist_3_joint']
+    RIGHT_ARM_JOINT_NAMES = ['r_ur5_arm_shoulder_pan_joint', 'r_ur5_arm_shoulder_lift_joint', 'r_ur5_arm_elbow_joint', 'r_ur5_arm_wrist_1_joint', 'r_ur5_arm_wrist_2_joint', 'r_ur5_arm_wrist_3_joint']
+    
+    if which_gripper is "left":
+        g.trajectory.joint_names = LEFT_ARM_JOINT_NAMES
+    if which_gripper is "right":
+        g.trajectory.joint_names = RIGHT_ARM_JOINT_NAMES
+    
+    global interpreter
+    current_group = interpreter.get_active_group()
+    joints = current_group.get_current_joint_values()
+    old_joints = joints
+    rospy.loginfo(joints)
+    global left_arm_client
+    global right_arm_client
+
+    # use the direction to move the joint value up or down. it's in radians. so should always figure itself out? or maybe needed to be bounded?
+    if direction is "left":
+        # Decrease the joint position in radians.
+        val = joints[5]
+        val += abs(rotation_step)
+        joints[5] = val    
+    if direction is "right":
+        val = joints[5]
+        val = val - abs(rotation_step)
+        joints[5] = val
+
+    current_group.set_joint_value_target(joints)
+    current_group.go()
+
+    return True
+
 def joy_callback(msg):
     axes = msg.axes
     buttons = msg.buttons
@@ -158,7 +208,6 @@ def joy_callback(msg):
             left_gripper_closed = True
             rospy.loginfo("Closing left gripper")
         return True
-
     if buttons[5]:
         if right_gripper_closed:
             rospy.loginfo("Opening right gripper")
@@ -173,6 +222,8 @@ def joy_callback(msg):
 
     right_joy_up = axes[4] > 0
     right_joy_down = axes[4] < 0
+    right_joy_left = axes[3] > 0
+    right_joy_right = axes[3] < 0
 
     # Check if LT is pressed
     if left_arm:
@@ -189,6 +240,10 @@ def joy_callback(msg):
             move_arm("up", dx)
         if right_joy_down:
             move_arm("down", dx)
+        if right_joy_left:
+            rotate_gripper("left", "left")
+        if right_joy_right:
+            rotate_gripper("right", "left")
     elif right_arm:
         # Right arm is pressed
         if left_joy_up:
@@ -203,6 +258,10 @@ def joy_callback(msg):
             move_arm("up", dx)
         if right_joy_down:
             move_arm("down", dx)
+        if right_joy_left:
+            rotate_gripper("left", "right")
+        if right_joy_right:
+            rotate_gripper("right", "right")
 
 def move_arm(direction, distance):
     global interpreter
@@ -228,10 +287,20 @@ if __name__=='__main__':
     global gripper_publisher
     global gripper_cmd
 
+    global left_arm_client
+    global right_arm_client
+   
     gripper_publisher = rospy.Publisher("/SModelRobotOutput", SModelRobotOutput)
     gripper_cmd = SModelRobotOutput()
     gripper_cmd = genCommand("a", gripper_cmd)
 
+    left_arm_client = actionlib.SimpleActionClient('/l_arm_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
+    right_arm_client = actionlib.SimpleActionClient('/r_arm_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
+    rospy.loginfo("Waiting for left arm action server")
+    left_arm_client.wait_for_server()
+    rospy.loginfo("Waiting for right arm action server")
+    right_arm_client.wait_for_server()
+    rospy.loginfo("Connected to arm action servers")
     
     # clean the scene
     # publish a demo scene
