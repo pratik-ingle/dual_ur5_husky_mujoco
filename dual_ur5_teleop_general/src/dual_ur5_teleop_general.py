@@ -70,6 +70,77 @@ Q1 = [1.57, -1.57, 0, -1.57, 0, 0]
 Q2 = [-1.57, -1.57, 0, -1.57, 0, 0]
 Q3 = [-1.57, -0.1745, -2.79, -1.57, 0, 0]
 
+# Definitions for predefined locations
+GRAB_OUT = 0
+GRAB_IN = 1
+GRAB_ABOVE = 2
+GRAB_BELOW = 3
+GRAB_FRONT = 4
+CARRY = 5
+DROP_OFF = 6
+FRONTAL_GRAB = 7
+
+LEFT_ARM = 0
+RIGHT_ARM = 1
+
+left_arm_joint_settings = [[]]
+left_arm_pose_settings = [[]]
+left_arm_rpy_settings = [[]]
+
+right_arm_joint_settings = [[]]
+right_arm_pose_settings = [[]]
+right_arm_rpy_settings = [[]]
+
+
+def go_to_predefined(conf)
+    global GRAB_OUT
+    global GRAB_IN
+    global GRAB_ABOVE
+    global GRAB_BELOW
+    global GRAB_FRONT
+    global CARRY
+    global DROP_OFF
+    global FRONTAL_GRAB
+    global interpreter
+    global LEFT_ARM
+    global RIGHT_ARM
+    global left_arm_joint_settings
+    global left_arm_pose_settings
+    global left_arm_rpy_settings
+    global right_arm_joint_settings
+    global right_arm_pose_settings
+    global right_arm_rpy_settings
+  
+    joint_settings = None
+    pose_settings = None
+    rpy_settings = None
+
+    arm = None
+
+    group = interpreter.get_active_group()
+    joints = group.get_joints()
+    joint1 = joints[0]
+    
+    if joint1[0] is "l":
+        arm = 0
+    elif joint1[0] is "r":
+        arm = 1
+
+    if arm is 0:
+        joint_settings = left_arm_joint_settings
+        rpy_settings = left_arm_rpy_settings
+        pose_settings = left_arm_pose_settings
+    elif arm is 1:
+        joint_settings = right_arm_joint_settings
+        rpy_settings = right_arm_rpy_settings
+        pose_settings = right_arm_pose_settings 
+
+    if arm is not None:
+        group.set_joint_value_target(joint_settings[conf])
+        group.set_rpy_target(rpy_settings[conf])
+        group.set_pose_target(pose_settings[conf])
+
+        group.go()
 
 def move_home():
     global interpreter
