@@ -364,7 +364,8 @@ def joy_callback(msg):
     right_joy_right = axes[3] < 0
 
     right_joystick_pressed = (buttons[10] == 1)
- 
+     
+
     # Check if LT is pressed
     if left_arm and not gripper_mode:
         # Left arm is pressed.
@@ -405,16 +406,16 @@ def joy_callback(msg):
             arm = "right"
 
         if left_joy_left:
-            rotate_gripper("pan_left", arm)
-        if left_joy_right:
-            rotate_gripper("pan_right", arm)
-        if left_joy_up:
-            rotate_gripper("pan_up", arm)
-        if left_joy_down:
-            rotate_gripper("pan_down", arm)
-        if right_joy_left:
+            go_to_predefined(GRAB_OUT)
+        elif left_joy_right:
+            go_to_predefined(GRAB_IN)
+        elif left_joy_up:
+            rotate_gripper(GRAB_ABOVE)
+        elif left_joy_down:
+            rotate_gripper(GRAB_BELOW)
+        elif right_joy_left:
             rotate_gripper("rotate_left", arm)
-        if right_joy_right:
+        elif right_joy_right:
             rotate_gripper("rotate_right", arm)
     elif ptu_mode:
         return True
