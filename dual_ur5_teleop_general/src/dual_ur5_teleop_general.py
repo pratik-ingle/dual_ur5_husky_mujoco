@@ -92,7 +92,7 @@ right_arm_pose_settings = [[]]
 right_arm_rpy_settings = [[]]
 
 
-def go_to_predefined(conf)
+def go_to_predefined(conf):
     global GRAB_OUT
     global GRAB_IN
     global GRAB_ABOVE
@@ -276,16 +276,6 @@ def rotate_gripper(direction, which_gripper):
         val = val - abs(rotation_step)
         joints[5] = val
 
-
-    if direction is "pan_left":
-        rospy.loginfo("TODO")
-    if direction is "pan_right":
-        rospy.loginfo("TODO")
-    if direction is "pan_up":
-        rospy.loginfo("TODO")
-    if direction is "pan_down":
-        rospy.loginfo("TODO")
-
     current_group.set_joint_value_target(joints)
     current_group.go()
 
@@ -302,7 +292,7 @@ def joy_callback(msg):
     global gripper_mode
     global ptu_mode
 
-    dx = 0.1
+    dx = 0.05
     # Dont do anything if the joy command is set to drive.
     if (buttons[0] > 0) or (buttons[2] > 0):
         return False
@@ -310,6 +300,7 @@ def joy_callback(msg):
     if buttons[6]:
         # stow arms
         move_home()
+        return
 
     # Changing arm control modes. Only one arm controlled at a time.
     if axes[2] < 0:
@@ -364,15 +355,18 @@ def joy_callback(msg):
     right_joy_right = axes[3] < 0
 
     right_joystick_pressed = (buttons[10] == 1)
-     
+    left_joy_pressed = (buttons[9] == 1)     
 
+    global GRAB_OUT
+    global GRAB_IN
+    global GRAB_FORWARD
+    global GRAB_ABOVE
+    global GRAB_BELOW
+    
     # Check if LT is pressed
     if left_arm and not gripper_mode:
         # Left arm is pressed.
-        if right_joystick_pressed:
-            orient_gripper(left_joy_directions)
-            return True
-        elif left_joy_up:
+        if left_joy_up:
             move_arm("forward", dx)
         elif left_joy_down:
             move_arm("back", dx)
@@ -404,15 +398,16 @@ def joy_callback(msg):
             arm = "left"
         elif right_arm:
             arm = "right"
-
         if left_joy_left:
             go_to_predefined(GRAB_OUT)
         elif left_joy_right:
             go_to_predefined(GRAB_IN)
         elif left_joy_up:
-            rotate_gripper(GRAB_ABOVE)
+            go_to_predefined(GRAB_ABOVE)
         elif left_joy_down:
-            rotate_gripper(GRAB_BELOW)
+            go_to_predefined(GRAB_BELOW)
+        elif left_joy_pressed:
+            go_to_predefined(GRAB_FORWARD)
         elif right_joy_left:
             rotate_gripper("rotate_left", arm)
         elif right_joy_right:
