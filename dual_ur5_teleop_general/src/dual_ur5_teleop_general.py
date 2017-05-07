@@ -91,6 +91,10 @@ right_arm_joint_settings = [[]]
 right_arm_pose_settings = [[]]
 right_arm_rpy_settings = [[]]
 
+CONTROL_MODE = 0
+LEFT_ARM_CONTROL = 1
+RIGHT_ARM_CONTROL = 2
+GRIPPER_CONTROL = 3
 
 def go_to_predefined(conf):
     global GRAB_OUT
@@ -291,6 +295,10 @@ def joy_callback(msg):
     global gripper_cmd
     global gripper_mode
     global ptu_mode
+    global LEFT_ARM_CONTROL
+    global CONTROL_MODE
+    global RIGHT_ARM_CONTROL
+    global GRIPPER_CONTROL
 
     dx = 0.05
     # Dont do anything if the joy command is set to drive.
@@ -308,11 +316,13 @@ def joy_callback(msg):
         left_arm = True
         right_arm = False
         rospy.loginfo("MODE: LEFT ARM CONTROL MODE")
+        CONTROL_MODE = LEFT_ARM_CONTROL
         return True
     if axes[5] < 0:
         interpreter.execute("use right_arm")
         right_arm = True
         left_arm = False
+        CONTROL_MODE = RIGHT_ARM_CONTROL
         rospy.loginfo("MODE: RIGHT ARM CONTROL MODE")
         return True
     # Left trigger pressed, send gripper close
@@ -337,6 +347,7 @@ def joy_callback(msg):
             rospy.loginfo("Closing right gripper")
         return True
     if buttons[1]:
+        CONTROL_MODE = GRIPPER_CONTROL
         if not gripper_mode:
             gripper_mode = True
         else:
@@ -364,7 +375,7 @@ def joy_callback(msg):
     global GRAB_BELOW
     
     # Check if LT is pressed
-    if left_arm and not gripper_mode:
+    if CONTROL_MODE is LEFT_ARM_CONTROL:
         # Left arm is pressed.
         if left_joy_up:
             move_arm("forward", dx)
@@ -378,7 +389,7 @@ def joy_callback(msg):
             move_arm("up", dx)
         elif right_joy_down:
             move_arm("down", dx)
-    elif right_arm and not gripper_mode:
+    elif CONTROL_MODE is RIGHT_ARM_CONTROL:
         # Right arm is pressed
         if left_joy_up:
             move_arm("forward", dx)
@@ -392,7 +403,7 @@ def joy_callback(msg):
             move_arm("up", dx)
         if right_joy_down:
             move_arm("down", dx)
-    elif gripper_mode:
+    elif CONTROL_MODE is GRIPPER_CONTROL:
         arm = ""
         if left_arm:
             arm = "left"
