@@ -21,12 +21,6 @@
         <joint name="husky_ptu_pan"/>
         <joint name="husky_ptu_tilt"/>
     </group>
-    <group name="left_ee_wrist">
-        <joint name="l_ur5_arm_wrist_3_joint"/>
-    </group>
-    <group name="right_ee_wrist">
-       <joint name="r_ur5_arm_wrist_3_joint"/>
-    </group>
     <group name="left_gripper">
         <joint name="l_robotiq_hand_joint" />
         <joint name="l_palm_finger_1_joint" />
