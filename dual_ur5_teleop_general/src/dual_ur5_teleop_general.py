@@ -52,7 +52,8 @@ right_arm = False
 gripper_mode = False
 ptu_mode = False
 
-gripper_publisher = None
+r_gripper_publisher = None
+l_gripper_publisher = None
 gripper_cmd = None
 
 left_gripper_closed = False
@@ -313,15 +314,11 @@ def joy_callback(msg):
     # Changing arm control modes. Only one arm controlled at a time.
     if axes[2] < 0:
         interpreter.execute("use left_arm")
-        left_arm = True
-        right_arm = False
         rospy.loginfo("MODE: LEFT ARM CONTROL MODE")
         CONTROL_MODE = LEFT_ARM_CONTROL
         return True
     if axes[5] < 0:
         interpreter.execute("use right_arm")
-        right_arm = True
-        left_arm = False
         CONTROL_MODE = RIGHT_ARM_CONTROL
         rospy.loginfo("MODE: RIGHT ARM CONTROL MODE")
         return True
@@ -329,21 +326,29 @@ def joy_callback(msg):
     if buttons[4]:
         if left_gripper_closed:
             open_gripper = genCommand("o", gripper_cmd)
-            gripper_publisher.publish(open_gripper)
+            l_gripper_publisher.publish(open_gripper)
             rospy.sleep(2)
             rospy.loginfo("Opening left gripper")
             left_gripper_closed = False
         else:
             close_gripper = genCommand("c", gripper_cmd)
-            gripper_publisher.publish(close_gripper)
+            l_gripper_publisher.publish(close_gripper)
             rospy.sleep(2)
             left_gripper_closed = True
             rospy.loginfo("Closing left gripper")
         return True
     if buttons[5]:
         if right_gripper_closed:
+            open_gripper = genCommand("o", gripper_cmd)
+            r_gripper_publisher.publish(open_gripper)
+            rospy.sleep(0.5)
+            right_gripper_closed = False
             rospy.loginfo("Opening right gripper")
         else:
+            close_gripper = genCommand("c", gripper_cmd)
+            r_gripper_publisher.publish(close_gripper)
+            rospy.sleep(0.5)
+            right_gripper_closed = True
             rospy.loginfo("Closing right gripper")
         return True
     if buttons[1]:
@@ -447,13 +452,16 @@ if __name__=='__main__':
     interpreter = MoveGroupCommandInterpreter()
     interpreter.execute("use left_arm")
 
-    global gripper_publisher
+    global r_gripper_publisher
+    global l_gripper_publisher
     global gripper_cmd
 
     global left_arm_client
     global right_arm_client
    
-    gripper_publisher = rospy.Publisher("/SModelRobotOutput", SModelRobotOutput)
+    r_gripper_publisher = rosyp.Publisher("/r_gripper/SModelRobotOutput", SModelRobotOutput)
+    l_gripper_publisher = rospy.Publisher("/l_gripper/SModelRobotOutput", SModelRobotOutput)
+    
     gripper_cmd = SModelRobotOutput()
     gripper_cmd = genCommand("a", gripper_cmd)
 
