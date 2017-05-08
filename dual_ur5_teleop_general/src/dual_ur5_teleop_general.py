@@ -84,9 +84,18 @@ FRONTAL_GRAB = 7
 LEFT_ARM = 0
 RIGHT_ARM = 1
 
-left_arm_joint_settings = [[]]
-left_arm_pose_settings = [[]]
-left_arm_rpy_settings = [[]]
+left_arm_joint_settings = [
+[-1.02, -0.035, -0.55, -1.453, -2.22, -1.481], 
+[],
+[],
+[],
+[],
+[],
+[] ]
+left_arm_pose_settings = [
+[0.899, 0.371, 0.0066, 0.268, 0.265, 0.6686, 0.6405] ]
+left_arm_rpy_settings = [
+[0.7739, -0.019, 1.605] ]
 
 right_arm_joint_settings = [[]]
 right_arm_pose_settings = [[]]
@@ -98,6 +107,15 @@ RIGHT_ARM_CONTROL = 2
 GRIPPER_CONTROL = 3
 
 def go_to_predefined(conf):
+    # CONF 0 GRAB OUT
+    # CONF 1 GRAB IN
+    # CONF 2 GRAB ABOVE
+    # CONF 3 GRAB BELOW
+    # CONF 4 GRAB FRONT
+    # CONF 5 CARRY
+    # CONF 6 DROP_OFF
+    # CONF 7 FRONTAL GRAB
+
     global GRAB_OUT
     global GRAB_IN
     global GRAB_ABOVE
@@ -115,37 +133,31 @@ def go_to_predefined(conf):
     global right_arm_joint_settings
     global right_arm_pose_settings
     global right_arm_rpy_settings
+    global LEFT_ARM_CONTROL
+    global RIGHT_ARM_CONTROL
+    global CONTROL_MODE
   
     joint_settings = None
     pose_settings = None
     rpy_settings = None
 
-    arm = None
-
     group = interpreter.get_active_group()
     joints = group.get_joints()
-    joint1 = joints[0]
-    
-    if joint1[0] is "l":
-        arm = 0
-    elif joint1[0] is "r":
-        arm = 1
-
-    if arm is 0:
+    arm = joints[0][0] 
+    if arm is 'l':
         joint_settings = left_arm_joint_settings
         rpy_settings = left_arm_rpy_settings
         pose_settings = left_arm_pose_settings
-    elif arm is 1:
+    elif arm is 'r':
         joint_settings = right_arm_joint_settings
         rpy_settings = right_arm_rpy_settings
         pose_settings = right_arm_pose_settings 
 
-    if arm is not None:
-        group.set_joint_value_target(joint_settings[conf])
-        group.set_rpy_target(rpy_settings[conf])
-        group.set_pose_target(pose_settings[conf])
+    group.set_joint_value_target(joint_settings[conf])
+    group.set_rpy_target(rpy_settings[conf])
+    group.set_pose_target(pose_settings[conf])
 
-        group.go()
+    group.go()
 
 def move_home():
     global interpreter
@@ -459,7 +471,7 @@ if __name__=='__main__':
     global left_arm_client
     global right_arm_client
    
-    r_gripper_publisher = rosyp.Publisher("/r_gripper/SModelRobotOutput", SModelRobotOutput)
+    r_gripper_publisher = rospy.Publisher("/r_gripper/SModelRobotOutput", SModelRobotOutput)
     l_gripper_publisher = rospy.Publisher("/l_gripper/SModelRobotOutput", SModelRobotOutput)
     
     gripper_cmd = SModelRobotOutput()
