@@ -98,3 +98,75 @@ How to launch the RViz viewer on your computer:
  2) Echo the topic
  
      rostopic echo husky_left_gripper/robotiq_force_torque_sensor
+
+
+VERSION 1.2 INSTRUCTIONS:
+
+    Git clone all of the code from http://github.com/dualur5husky. Skip the pointgrey_camera_driver.
+    Checkout husky's dual_ur5_husky branch
+    Checkout robotiq's indigo-devel
+    Install all of the dependencies and move the robotiq_s_model_articulated_gazebo* pkgs out of the workspace since we don't need gazebo on a real bot
+    checkout dual_ur5_husky branch from the husky/ repo
+    Build the workspace
+    install moveit. apt-get install ros-indigo-moveit*
+    apt-get install ros-indigo-ompl*
+    apt-get install ros-indigo-moveit-ompl*
+    apt-get install python-pymodbus ros-indigo-tf2-ros
+    apt-get install ros-indigo-joint-state-controller ros-indigo-position-controllers
+    install the robot
+        rosrun robot_upstart install husky_bringup/launch/dual_ur5
+        this will put everything in the /etc/ros/indigo/husky.d folder which will not get started on boot, but will help you with launching everything
+    before launching the robot, checkout robotiq's jade-devel
+
+
+bringing up the robot and controlling it:
+
+    turn the robot on by pressing the husky power button on the back
+    turn the arms on by pressing both buttons
+    go to the arm tablet screen attached to the husky and make sure the robots are activated and un e-stopped
+    head back to your computer and ssh into the robot via LAN or WLAN to 192.168.1.11, administrator/clearpath
+    once logged in, go to the /etc/ros/indigo/husky.d folder.
+    roslaunch ptu.launch twice. it will fail the first time for some unknown reason, then
+    roslaunch *
+    this will launch the 2 gripper launch files, the 2 arm launch files, and the ptu.launch which will enable all of the drivers for the robot
+    Now, bringup the moveit planning execution
+    roslaunch husky_dual_ur5_moveit_config husky_dual_ur5_moveit_planning_execution.launch real:=true
+    now you can run whatever code you would like. for examples on how to control each part of the robot, see the code inside the "dual_ur5_teleop_general" package which implements some robot control in python.
+    Alternatively, you can move the robot around using the dual_ur5_teleop_general ROS package and the joystick that ships with the husky. To do this:
+    rosrun dual_ur5_teleop_general dual_ur5_teleop_general.py
+    The controller scheme is listed below:
+
+
+Dual UR5 Teleop General Controller Mappings:
+
+
+Preface: This teleoperation uses MoveIt! to move the arms around. You may want to configure and tweak your MoveIt! settings inside the husky_dual_ur5_moveit_config package to better suit your research needs and your research environment. Things of note should be: setting the ground plane, setting padding for the obstacles/the arms, joint limits and joint speeds/accelerations, and what type of planning library.
+
+
+    Press Left Trigger to enter "Left Arm" control mode. This will make all movements of the joysticks correspond to left arm movement.
+    Press Right Trigger to enter "Right Arm" control mode. This will make all movements of the joystick correspond to the right arm movement.
+    While in the respective arm control mode, each joystick direction will move the robot's end effector 5cm in the specified direction.
+    Leftjoystick left: Move left 5cm
+    Leftjoystick right: Move right 5cm
+    Leftjoystick up: Move forward 5cm
+    Leftjoystick down: Move backward 5cm
+    Right joystick up: Move up 5cm
+    Right joystick down: Move down 5cm
+    Back: Will return the arm to its home position. Please have the e-stop ready as it may swing around rapidly depending on its starting position.
+
+
+Tips and tricks: Note, the arm may "flail" and "whip" around if the specified direction is outside its current joint limit motion ranges. In doing so, unless you have the ground plane added in MoveIt, it MAY plan and execute through the ground. The arm will e-stop itself however, but always be careful, run on low speed, have RViz open to see the workspace, and have your hand on the e-stop at all times! You are responsible for any damage done to the arms or grippers, and not Clearpath Robotics.
+
+
+    Press "B" to enter Gripper control mode. This will make all joystick movements correspond to the grippers. They are:
+    Right joystick left: Rotate left
+    Right joystick right: Rotate right
+    Press the Left Bumper to open and close the left gripper.
+    Press the Right bumper to open and close the right gripper.
+
+
+usage of the ptu:
+
+    launch the ptu.launch driver
+    send joint state info to /ptu/cmd
+        rostopic pub /ptu/cmd sensor_msgs/JointState (press tab to fill it in). The position array and the velocity array must have two values in each, one for pan, one for tilt. The range for angles is in radians
