@@ -112,10 +112,9 @@ LEFT_ARM_CONTROL = 1
 RIGHT_ARM_CONTROL = 2
 GRIPPER_CONTROL = 3
 
-
-def move_ptu(increment=0.1, tilt, ptu):
+def move_ptu(increment=0.1, tilt=false, ptu=false, direction):
     global ptu_cmd_publisher
-    speed = 0.1
+    speed = 0.1 * direction
     joint_state_msg = JointState()
     joint_state_msg.name = ['husky_ptu_pan', 'husky_ptu_tilt']
     joint_state_msg.header.frame_id = 'husky_ptu'
@@ -341,6 +340,11 @@ def joy_callback(msg):
     global RIGHT_ARM_CONTROL
     global GRIPPER_CONTROL
 
+    dpad_left = axes[6] < 0
+    dpad_right = axes[6] > 0
+    dpad_down = axes[7] < 0
+    dpad_up = axes[7] > 0
+
     dx = 0.05
     # Dont do anything if the joy command is set to drive.
     if (buttons[0] > 0) or (buttons[2] > 0):
@@ -350,6 +354,15 @@ def joy_callback(msg):
         # stow arms
         move_home()
         return
+
+    if dpad_left:
+        move_ptu(pan, -1)
+    if dpad_right:
+        move_ptu(pan, 1)
+    if dpad_down:
+        move_ptu(tilt, -1)
+    if dpad_up:
+        move_ptu(tilt, 1)
 
     # Changing arm control modes. Only one arm controlled at a time.
     if axes[2] < 0:
