@@ -112,7 +112,7 @@ LEFT_ARM_CONTROL = 1
 RIGHT_ARM_CONTROL = 2
 GRIPPER_CONTROL = 3
 
-def move_ptu(increment=0.1, tilt=false, ptu=false, direction):
+def move_ptu(increment=0.1, tilt=false, ptu=false, direction=1):
     global ptu_cmd_publisher
     speed = 0.1 * direction
     joint_state_msg = JointState()
