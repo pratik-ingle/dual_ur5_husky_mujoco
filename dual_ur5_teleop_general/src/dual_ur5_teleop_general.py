@@ -495,13 +495,10 @@ def jointstate_callback(msg):
     global husky_ptu_tilt_position
     global husky_ptu_pan_position
     joints = msg.name
-    rospy.loginfo(joints)
-    if joints[0] is "husky_ptu_pan":
-        husky_ptu_pan_position = msg.position[0] 
-        rospy.loginfo("Updated position to " + str(husky_ptu_pan_position))
-    if joints[1] is "husky_ptu_tilt":
-        rospy.loginfo("Updated position to " + str(husky_ptu_tilt_position))
-        husky_ptu_tilt_position = msg.position[1]
+    husky_ptu_pan_position = msg.position[0] 
+    husky_ptu_tilt_position = msg.position[1]
+    rospy.loginfo("Updated position to " + str(husky_ptu_pan_position))
+    rospy.loginfo("Updated position to " + str(husky_ptu_tilt_position))
     
 def move_arm(direction, distance):
     global interpreter
@@ -529,7 +526,7 @@ if __name__=='__main__':
     l_gripper_publisher = rospy.Publisher("/l_gripper/SModelRobotOutput", SModelRobotOutput)
 
     ptu_cmd_publisher = rospy.Publisher("/ptu/cmd", JointState)
-    joint_state_subscriber = rospy.Subscriber("/joint_states", JointState, jointstate_callback)
+    joint_state_subscriber = rospy.Subscriber("/joint_states_ptu", JointState, jointstate_callback, queue_size=1)
     
     gripper_cmd = SModelRobotOutput()
     gripper_cmd = genCommand("a", gripper_cmd)
