@@ -112,19 +112,21 @@ LEFT_ARM_CONTROL = 1
 RIGHT_ARM_CONTROL = 2
 GRIPPER_CONTROL = 3
 
-def move_ptu(increment=0.1, tilt=false, ptu=false, direction=1):
+def move_ptu(increment=0.2, tilt=False, pan=False, direction=1):
     global ptu_cmd_publisher
-    speed = 0.1 * direction
+    speed = 0.1
+    increment = increment * direction
+    rospy.loginfo("Direction: " + str(increment))
     joint_state_msg = JointState()
     joint_state_msg.name = ['husky_ptu_pan', 'husky_ptu_tilt']
     joint_state_msg.header.frame_id = 'husky_ptu'
     # current position
+    rospy.loginfo("Current position pan: " + str(husky_ptu_pan_position) + " tilt: " + str(husky_ptu_tilt_position))
     joint_state_msg.position = [husky_ptu_pan_position, husky_ptu_tilt_position]
     joint_state_msg.effort = [0, 0]
-    joint_state_msg.header.stamp = {secs: 0, nsecs: 0}
     joint_state_msg.header.seq = 0
     # increment it 
-    if ptu:
+    if pan:
         joint_state_msg.position[0] = joint_state_msg.position[0] + increment
     if tilt:
         joint_state_msg.position[1] = joint_state_msg.position[1] + increment
@@ -340,8 +342,8 @@ def joy_callback(msg):
     global RIGHT_ARM_CONTROL
     global GRIPPER_CONTROL
 
-    dpad_left = axes[6] < 0
-    dpad_right = axes[6] > 0
+    dpad_right = axes[6] < 0
+    dpad_left = axes[6] > 0
     dpad_down = axes[7] < 0
     dpad_up = axes[7] > 0
 
@@ -356,13 +358,17 @@ def joy_callback(msg):
         return
 
     if dpad_left:
-        move_ptu(pan, -1)
+        rospy.loginfo("Panning left")
+        move_ptu(pan=True, direction=1)
     if dpad_right:
-        move_ptu(pan, 1)
+        rospy.loginfo("Panning right")
+        move_ptu(pan=True, direction=-1)
     if dpad_down:
-        move_ptu(tilt, -1)
+        rospy.loginfo("Tilting down")
+        move_ptu(tilt=True, direction=-1)
     if dpad_up:
-        move_ptu(tilt, 1)
+        rospy.loginfo("Tilting up")
+        move_ptu(tilt=True, direction=1)
 
     # Changing arm control modes. Only one arm controlled at a time.
     if axes[2] < 0:
@@ -489,12 +495,14 @@ def jointstate_callback(msg):
     global husky_ptu_tilt_position
     global husky_ptu_pan_position
     joints = msg.name
+    rospy.loginfo(joints)
     if joints[0] is "husky_ptu_pan":
         husky_ptu_pan_position = msg.position[0] 
+        rospy.loginfo("Updated position to " + str(husky_ptu_pan_position))
     if joints[1] is "husky_ptu_tilt":
+        rospy.loginfo("Updated position to " + str(husky_ptu_tilt_position))
         husky_ptu_tilt_position = msg.position[1]
     
- 
 def move_arm(direction, distance):
     global interpreter
     rospy.loginfo("Moving right arm " + direction + " " + str(distance))
@@ -506,12 +514,6 @@ if __name__=='__main__':
     rospy.init_node('moveit_py_demo', anonymous=True)
     rospy.Subscriber("/joy_teleop/joy", Joy, joy_callback, queue_size=1)    
 
-    #scene = PlanningSceneInterface()
-    #robot = RobotCommander()
-    #rospy.sleep(1)
-
-    #left_arm = robot.left_arm
-    #left_arm.go()
     global interpreter
     interpreter = MoveGroupCommandInterpreter()
     interpreter.execute("use left_arm")
