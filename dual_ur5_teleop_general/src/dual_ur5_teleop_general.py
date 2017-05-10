@@ -113,11 +113,27 @@ RIGHT_ARM_CONTROL = 2
 GRIPPER_CONTROL = 3
 
 
-#def tilt_ptu(increment):
-    
+def move_ptu(increment=0.1, tilt, ptu):
+    global ptu_cmd_publisher
+    speed = 0.1
+    joint_state_msg = JointState()
+    joint_state_msg.name = ['husky_ptu_pan', 'husky_ptu_tilt']
+    joint_state_msg.header.frame_id = 'husky_ptu'
+    # current position
+    joint_state_msg.position = [husky_ptu_pan_position, husky_ptu_tilt_position]
+    joint_state_msg.effort = [0, 0]
+    joint_state_msg.header.stamp = {secs: 0, nsecs: 0}
+    joint_state_msg.header.seq = 0
+    # increment it 
+    if ptu:
+        joint_state_msg.position[0] = joint_state_msg.position[0] + increment
+    if tilt:
+        joint_state_msg.position[1] = joint_state_msg.position[1] + increment
 
-#def pan_ptu(increment):
+    joint_state_msg.velocity = [speed, speed]
+    ptu_cmd_publisher.publish(joint_state_msg)
 
+        
 def go_to_predefined(conf):
     # CONF 0 GRAB OUT
     # CONF 1 GRAB IN
