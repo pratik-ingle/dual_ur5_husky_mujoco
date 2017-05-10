@@ -40,6 +40,7 @@ from moveit_commander import RobotCommander, PlanningSceneInterface, MoveGroupCo
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Pose
 from sensor_msgs.msg import Joy
+from sensor_msgs.msg import JointState
 from robotiq_s_model_articulated_msgs.msg import SModelRobotOutput
 from trajectory_msgs.msg import *
 from control_msgs.msg import *
@@ -62,8 +63,13 @@ right_gripper_closed = False
 left_gripper_rotation = 0
 right_gripper_rotation = 0
 
+husky_ptu_pan_position = 0
+husky_ptu_tilt_position = 0
+
 left_arm_client = None
 right_arm_client = None
+
+ptu_cmd_publisher = None
 
 LEFT_JOINT_NAMES = ['l_ur5_arm_shoulder_pan_joint', 'l_ur5_arm_shoulder_lift_joint', 'l_ur5_arm_elbow_joint', 'l_ur5_arm_wrist_1_joint', 'l_ur5_arm_wrist_2_joint', 'l_ur5_arm_wrist_3_joint']
 RIGHT_JOINT_NAMES = ['r_ur5_arm_shoulder_pan_joint', 'r_ur5_arm_shoulder_lift_joint', 'r_ur5_arm_elbow_joint', 'r_ur5_arm_wrist_1_joint', 'r_ur5_arm_wrist_2_joint', 'r_ur5_arm_wrist_3_joint']
@@ -105,6 +111,12 @@ CONTROL_MODE = 0
 LEFT_ARM_CONTROL = 1
 RIGHT_ARM_CONTROL = 2
 GRIPPER_CONTROL = 3
+
+
+#def tilt_ptu(increment):
+    
+
+#def pan_ptu(increment):
 
 def go_to_predefined(conf):
     # CONF 0 GRAB OUT
@@ -442,6 +454,17 @@ def joy_callback(msg):
             rotate_gripper("rotate_right", arm)
     elif ptu_mode:
         return True
+
+def jointstate_callback(msg):
+    # Get current js for ptu
+    global husky_ptu_tilt_position
+    global husky_ptu_pan_position
+    joints = msg.name
+    if joints[0] is "husky_ptu_pan":
+        husky_ptu_pan_position = msg.position[0] 
+    if joints[1] is "husky_ptu_tilt":
+        husky_ptu_tilt_position = msg.position[1]
+    
  
 def move_arm(direction, distance):
     global interpreter
@@ -473,6 +496,9 @@ if __name__=='__main__':
    
     r_gripper_publisher = rospy.Publisher("/r_gripper/SModelRobotOutput", SModelRobotOutput)
     l_gripper_publisher = rospy.Publisher("/l_gripper/SModelRobotOutput", SModelRobotOutput)
+
+    ptu_cmd_publisher = rospy.Publisher("/ptu/cmd", JointState)
+    joint_state_subscriber = rospy.Subscriber("/joint_states", JointState, jointstate_callback)
     
     gripper_cmd = SModelRobotOutput()
     gripper_cmd = genCommand("a", gripper_cmd)
