@@ -112,6 +112,84 @@ LEFT_ARM_CONTROL = 1
 RIGHT_ARM_CONTROL = 2
 GRIPPER_CONTROL = 3
 
+CURRENT_JOINT_CONTROL = None
+NUMBER_OF_JOINTS = 0 
+JOINT_LIMIT_RADIANS = 2
+INDIVIDUAL_JOINT_CONTROL = 4
+
+def update_joint_selector():
+    global CURRENT_JOINT_CONTROL
+    global NUMBER_OF_JOINTS
+    global INDIVIDUAL_JOINT_CONTROL
+    global CONTROL_MODE
+    global LEFT_ARM_CONTROL
+
+    if CURRENT_JOINT_CONTROL is None:
+        CURRENT_JOINT_CONTROL = 0
+        CONTROL_MODE = INDIVIDUAL_JOINT_CONTROL
+    if CURRENT_JOINT_CONTROL is (NUMBER_OF_JOINTS - 1):
+        CURRENT_JOINT_CONTROL = None
+        CONTROL_MODE = LEFT_ARM_CONTROL
+    if CURRENT_JOINT_CONTROL is 0:
+        CURRENT_JOINT_CONTROL += 1    
+
+def vibrate_controller():
+    rospy.loginfo("Outside of joint limits. Try moving it in the other direction")    
+
+# Returns False if it cannot move it past the joint range.
+# Returns True if it can actuate it via MoveIt! (e.g its within the range)
+def move_selected_joint(direction=1):
+    # Take current joint position from current mode/arm position by listening to group.
+    # Increment that joint position. If its above the limits, do not move it. Instead, vibrate the controller.
+    global JOINT_LIMIT_RADIANS
+    global interpreter
+    increment = 0.1 * direction
+    group = interpreter.get_active_group()
+    global left_arm_client
+    global right_arm_client
+    global LEFT_JOINT_NAMES
+    global RIGHT_JOINT_NAMES
+
+    client = None
+    JOINTS = None
+
+    if CONTROL_MODE is LEFT_ARM_CONTROL:
+        client = left_arm_client
+        JOINTS = LEFT_JOINT_NAMES
+    elif CONTROL_MODE is RIGHT_ARM_CONTROL:
+        client = right_arm_client
+        JOINTS = RIGHT_JOINT_NAMES
+    else:
+        rospy.loginfo("You must select an arm to control before commanding the joint modes")
+        return False
+
+    Q1 = group.get_current_joint_values()
+
+    current_position = Q1[CURRENT_JOINT_CONTROL] 
+    updated_position = current_position + increment
+    Q1[CURRENT_JOINT_CONTROL] = updated_position
+
+    if updated_position > 2.0:
+        updated_position = 2.0
+        vibrate_controller()
+    if updated_position < -2.0:
+        updated_position = -2.0
+        vibrate_controller()
+
+    g = FollowJointTrajectoryGoal()
+    g.trajectory = JointTrajectory()
+    g.trajectory.joint_names = JOINTS
+    g.trajectory.points = [
+        JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0]*6, time_from_start=rospy.Duration(0.0)),
+        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(2.0)),
+    client.send_goal(g)
+    rospy.loginfo("Moved arm to home position")
+    try:
+        client.wait_for_result()
+    except KeyboardInterrupt:
+        client.cancel_goal()
+        raise
+
 def move_ptu(increment=0.2, tilt=False, pan=False, direction=1):
     global ptu_cmd_publisher
     speed = 0.1
@@ -344,11 +422,13 @@ def joy_callback(msg):
     global CONTROL_MODE
     global RIGHT_ARM_CONTROL
     global GRIPPER_CONTROL
+    global INDIVIDUAL_JOINT_CONTROL
 
     dpad_right = axes[6] < 0
     dpad_left = axes[6] > 0
     dpad_down = axes[7] < 0
     dpad_up = axes[7] > 0
+
 
     dx = 0.05
     # Dont do anything if the joy command is set to drive.
@@ -359,6 +439,9 @@ def joy_callback(msg):
         # stow arms
         move_home()
         return
+
+    if buttons[3]:
+        update_joint_selctor()
 
     if dpad_left:
         rospy.loginfo("Panning left")
@@ -440,6 +523,7 @@ def joy_callback(msg):
     global GRAB_FORWARD
     global GRAB_ABOVE
     global GRAB_BELOW
+    global INDIVIDUAL_JOINT_CONTROL
     
     # Check if LT is pressed
     if CONTROL_MODE is LEFT_ARM_CONTROL:
@@ -490,6 +574,11 @@ def joy_callback(msg):
             rotate_gripper("rotate_left", arm)
         elif right_joy_right:
             rotate_gripper("rotate_right", arm)
+    elif CONTROL_MODE is INDIVIDUAL_JOINT_CONTROL:
+        if right_joy_left:
+            move_selected_joint(direction=1)
+        if right_joy_right:
+            move_selected_joint(direction=-1)        
     elif ptu_mode:
         return True
 
