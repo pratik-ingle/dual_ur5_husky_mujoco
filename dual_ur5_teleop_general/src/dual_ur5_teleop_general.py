@@ -129,10 +129,10 @@ def update_joint_selector(next=False, previous=False):
     incr = None
     if next:
         incr = 1
+        rospy.loginfo("Going to next joint")
     elif previous:
         incr = -1
-    else:
-        incr = 1
+        rospy.loginfo("Going to previous joint")
 
     if CURRENT_JOINT_CONTROL is None:
         CURRENT_JOINT_CONTROL = 0
@@ -140,8 +140,9 @@ def update_joint_selector(next=False, previous=False):
         CURRENT_JOINT_CONTROL = CURRENT_JOINT_CONTROL + incr    
         if CURRENT_JOINT_CONTROL >= 6:
             CURRENT_JOINT_CONTROL = None
-        if CURRENT_JOINT_CONTROL < 0:
+        if CURRENT_JOINT_CONTROL <= 0:
             CURRENT_JOINT_CONTROL = None
+        
     vibrate_controller()
     rospy.loginfo("Currently controlling joint: " + str(CURRENT_JOINT_CONTROL))
 
@@ -466,9 +467,27 @@ def joy_callback(msg):
     dpad_down = axes[7] < 0
     dpad_up = axes[7] > 0
 
+    left_joy_up = axes[1] > 0
+    left_joy_down = axes[1] < 0
+    left_joy_left = axes[0] > 0
+    left_joy_right = axes[0] < 0
+
+    left_joy_directions = [left_joy_up, left_joy_down, left_joy_left, left_joy_right]
+
+    right_joy_up = axes[4] > 0
+    right_joy_down = axes[4] < 0
+    right_joy_left = axes[3] > 0
+    right_joy_right = axes[3] < 0
+
+    right_joystick_pressed = (buttons[10] == 1)
+    left_joy_pressed = (buttons[9] == 1)
+
     dx = 0.05
+    fast_driving = (buttons[2] > 0 and (left_joy_up or left_joy_down or left_joy_left or left_joy_right))
+    slow_driving = (buttons[0] > 0 and (left_joy_up or left_joy_down or left_joy_left or left_joy_right))
+    is_driving = slow_driving or fast_driving
     # Dont do anything if the joy command is set to drive.
-    if (buttons[0] > 0) or (buttons[2] > 0):
+    if is_driving:
         return False
 
     if buttons[6]:
@@ -479,8 +498,10 @@ def joy_callback(msg):
     a = msg.header.seq % 7
     if buttons[3] and (a == 0):
         update_joint_selector(next=True)
-    elif buttons[2] and (a == 0):
+    
+    if buttons[2] and (a == 0):
         update_joint_selector(previous=True)
+
     if dpad_left:
         rospy.loginfo("Panning left")
         move_ptu(pan=True, direction=1)
@@ -543,21 +564,6 @@ def joy_callback(msg):
             vibrate_controller()
         else:
             gripper_mode = False
-
-    left_joy_up = axes[1] > 0
-    left_joy_down = axes[1] < 0
-    left_joy_left = axes[0] > 0
-    left_joy_right = axes[0] < 0
-
-    left_joy_directions = [left_joy_up, left_joy_down, left_joy_left, left_joy_right]
-
-    right_joy_up = axes[4] > 0
-    right_joy_down = axes[4] < 0
-    right_joy_left = axes[3] > 0
-    right_joy_right = axes[3] < 0
-
-    right_joystick_pressed = (buttons[10] == 1)
-    left_joy_pressed = (buttons[9] == 1)     
 
     global GRAB_OUT
     global GRAB_IN
