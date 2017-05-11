@@ -121,20 +121,41 @@ NUMBER_OF_JOINTS = 0
 JOINT_LIMIT_RADIANS = 2
 INDIVIDUAL_JOINT_CONTROL = 4
 
+from subprocess import Popen, PIPE, STDOUT
+
 # Ignores anything with a greater then 3 hz frequency
-def update_joint_selector():
+def update_joint_selector(next=False, previous=False):
     global CURRENT_JOINT_CONTROL
+    incr = None
+    if next:
+        incr = 1
+    elif previous:
+        incr = -1
+    else:
+        incr = 1
+
     if CURRENT_JOINT_CONTROL is None:
         CURRENT_JOINT_CONTROL = 0
     elif CURRENT_JOINT_CONTROL >= 0:
-        CURRENT_JOINT_CONTROL = CURRENT_JOINT_CONTROL + 1    
+        CURRENT_JOINT_CONTROL = CURRENT_JOINT_CONTROL + incr    
         if CURRENT_JOINT_CONTROL >= 6:
             CURRENT_JOINT_CONTROL = None
-
+        if CURRENT_JOINT_CONTROL < 0:
+            CURRENT_JOINT_CONTROL = None
+    vibrate_controller()
     rospy.loginfo("Currently controlling joint: " + str(CURRENT_JOINT_CONTROL))
 
+# Needs to be locking
+lock = False
 def vibrate_controller():
-    rospy.loginfo("Outside of joint limits. Try moving it in the other direction")    
+    global lock
+    if lock is False:
+        lock = True
+        process = Popen(["fftest", "/dev/input/event9"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        process.stdin.write("4\n0\n")
+        rospy.sleep(2.0)
+        process.stdin.write("-1\n")
+        lock = False
 
 # Returns False if it cannot move it past the joint range.
 # Returns True if it can actuate it via MoveIt! (e.g its within the range)
@@ -457,8 +478,9 @@ def joy_callback(msg):
 
     a = msg.header.seq % 7
     if buttons[3] and (a == 0):
-        update_joint_selector()
-
+        update_joint_selector(next=True)
+    elif buttons[2] and (a == 0):
+        update_joint_selector(previous=True)
     if dpad_left:
         rospy.loginfo("Panning left")
         move_ptu(pan=True, direction=1)
@@ -477,11 +499,13 @@ def joy_callback(msg):
         interpreter.execute("use left_arm")
         rospy.loginfo("MODE: LEFT ARM CONTROL MODE")
         CONTROL_MODE = LEFT_ARM_CONTROL
+        vibrate_controller()
         return True
     if axes[5] < 0:
         interpreter.execute("use right_arm")
         CONTROL_MODE = RIGHT_ARM_CONTROL
         rospy.loginfo("MODE: RIGHT ARM CONTROL MODE")
+        vibrate_controller() 
         return True
     # Left trigger pressed, send gripper close
     if buttons[4]:
@@ -516,6 +540,7 @@ def joy_callback(msg):
         CONTROL_MODE = GRIPPER_CONTROL
         if not gripper_mode:
             gripper_mode = True
+            vibrate_controller()
         else:
             gripper_mode = False
 
