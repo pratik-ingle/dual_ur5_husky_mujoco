@@ -193,13 +193,16 @@ def move_home():
     group = interpreter.get_active_group()
     global left_arm_client
     global right_arm_client
-    j = group.get_joints()
+    global CONTROL_MODE
+    global LEFT_ARM_CONTROL
+    global RIGHT_ARM_CONTROL
     JOINTS = None
     client = None
-    if j[0][0] is "l": 
+
+    if CONTROL_MODE is LEFT_ARM_CONTROL: 
         client = left_arm_client
         JOINTS = LEFT_JOINT_NAMES
-    elif j[0][0] is "r":
+    elif CONTROL_MODE is RIGHT_ARM_CONTROL:
         client = right_arm_client
         JOINTS = RIGHT_JOINT_NAMES
 
