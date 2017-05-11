@@ -123,15 +123,19 @@ def update_joint_selector():
     global INDIVIDUAL_JOINT_CONTROL
     global CONTROL_MODE
     global LEFT_ARM_CONTROL
+    global interpreter
+    group = interpreter.get_active_group()
+
+    NUMBER_OF_JOINTS = len(group.get_joints())
 
     if CURRENT_JOINT_CONTROL is None:
         CURRENT_JOINT_CONTROL = 0
-        CONTROL_MODE = INDIVIDUAL_JOINT_CONTROL
-    if CURRENT_JOINT_CONTROL is (NUMBER_OF_JOINTS - 1):
-        CURRENT_JOINT_CONTROL = None
-        CONTROL_MODE = LEFT_ARM_CONTROL
     if CURRENT_JOINT_CONTROL is 0:
         CURRENT_JOINT_CONTROL += 1    
+        if CURRENT_JOINT_CONTROL >= len(group.get_joints()):
+            CURRENT_JOINT_CONTROL = None
+
+    rospy.loginfo("Currently controlling joint: " + group.get_joints()[CURRENT_JOINT_CONTROL])
 
 def vibrate_controller():
     rospy.loginfo("Outside of joint limits. Try moving it in the other direction")    
@@ -181,7 +185,7 @@ def move_selected_joint(direction=1):
     g.trajectory.joint_names = JOINTS
     g.trajectory.points = [
         JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0]*6, time_from_start=rospy.Duration(0.0)),
-        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(2.0)),
+        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(2.0)) ]
     client.send_goal(g)
     rospy.loginfo("Moved arm to home position")
     try:
@@ -422,13 +426,11 @@ def joy_callback(msg):
     global CONTROL_MODE
     global RIGHT_ARM_CONTROL
     global GRIPPER_CONTROL
-    global INDIVIDUAL_JOINT_CONTROL
 
     dpad_right = axes[6] < 0
     dpad_left = axes[6] > 0
     dpad_down = axes[7] < 0
     dpad_up = axes[7] > 0
-
 
     dx = 0.05
     # Dont do anything if the joy command is set to drive.
@@ -441,7 +443,7 @@ def joy_callback(msg):
         return
 
     if buttons[3]:
-        update_joint_selctor()
+        update_joint_selector()
 
     if dpad_left:
         rospy.loginfo("Panning left")
@@ -524,9 +526,10 @@ def joy_callback(msg):
     global GRAB_ABOVE
     global GRAB_BELOW
     global INDIVIDUAL_JOINT_CONTROL
-    
+    global CURRENT_JOINT_CONTROL    
+
     # Check if LT is pressed
-    if CONTROL_MODE is LEFT_ARM_CONTROL:
+    if CONTROL_MODE is LEFT_ARM_CONTROL and (CURRENT_JOINT_CONTROL is None):
         # Left arm is pressed.
         if left_joy_up:
             move_arm("forward", dx)
@@ -540,7 +543,7 @@ def joy_callback(msg):
             move_arm("up", dx)
         elif right_joy_down:
             move_arm("down", dx)
-    elif CONTROL_MODE is RIGHT_ARM_CONTROL:
+    elif CONTROL_MODE is RIGHT_ARM_CONTROL and (CURRENT_JOINT_CONTROL is None):
         # Right arm is pressed
         if left_joy_up:
             move_arm("forward", dx)
@@ -554,7 +557,7 @@ def joy_callback(msg):
             move_arm("up", dx)
         if right_joy_down:
             move_arm("down", dx)
-    elif CONTROL_MODE is GRIPPER_CONTROL:
+    elif CONTROL_MODE is GRIPPER_CONTROL and (CURRENT_JOINT_CONTROL is None):
         arm = ""
         if left_arm:
             arm = "left"
@@ -574,7 +577,7 @@ def joy_callback(msg):
             rotate_gripper("rotate_left", arm)
         elif right_joy_right:
             rotate_gripper("rotate_right", arm)
-    elif CONTROL_MODE is INDIVIDUAL_JOINT_CONTROL:
+    elif CURRENT_JOINT_CONTROL >= 0:
         if right_joy_left:
             move_selected_joint(direction=1)
         if right_joy_right:
@@ -589,8 +592,6 @@ def jointstate_callback(msg):
     joints = msg.name
     husky_ptu_pan_position = msg.position[0] 
     husky_ptu_tilt_position = msg.position[1]
-    rospy.loginfo("Updated position to " + str(husky_ptu_pan_position))
-    rospy.loginfo("Updated position to " + str(husky_ptu_tilt_position))
     
 def move_arm(direction, distance):
     global interpreter
