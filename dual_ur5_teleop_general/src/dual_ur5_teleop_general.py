@@ -75,7 +75,11 @@ LEFT_JOINT_NAMES = ['l_ur5_arm_shoulder_pan_joint', 'l_ur5_arm_shoulder_lift_joi
 RIGHT_JOINT_NAMES = ['r_ur5_arm_shoulder_pan_joint', 'r_ur5_arm_shoulder_lift_joint', 'r_ur5_arm_elbow_joint', 'r_ur5_arm_wrist_1_joint', 'r_ur5_arm_wrist_2_joint', 'r_ur5_arm_wrist_3_joint']
 Q1 = [1.57, -1.57, 0, -1.57, 0, 0]
 Q2 = [-1.57, -1.57, 0, -1.57, 0, 0]
-Q3 = [-1.57, -0.1745, -2.79, -1.57, 0, 0]
+Q3 = [-1.57, -0.2967, -2.79, -1.57, -0.5236, 0]
+
+RQ1 = [0, -1.57, 0, -1.5708, 0, 0]
+RQ2 = [1.57, -1.57, 0, -1.57, 0, 0]
+RQ3 = [1.57, -2.8449, 2.7925, -1.57, 0.5236, 0]
 
 # Definitions for predefined locations
 GRAB_OUT = 0
@@ -273,21 +277,38 @@ def move_home():
     JOINTS = None
     client = None
 
+    global Q1
+    global Q2
+    global Q3
+    global RQ1
+    global RQ2
+    global RQ3
+
+    HQ1 = None
+    HQ2 = None
+    HQ3 = None
+   
     if CONTROL_MODE is LEFT_ARM_CONTROL: 
         client = left_arm_client
         JOINTS = LEFT_JOINT_NAMES
+        HQ1 = Q1
+        HQ2 = Q2
+        HQ3 = Q3
     elif CONTROL_MODE is RIGHT_ARM_CONTROL:
         client = right_arm_client
         JOINTS = RIGHT_JOINT_NAMES
+        HQ1 = RQ1
+        HQ2 = RQ2
+        HQ3 = RQ3
 
     g = FollowJointTrajectoryGoal()
     g.trajectory = JointTrajectory()
     g.trajectory.joint_names = JOINTS 
     g.trajectory.points = [
         JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0]*6, time_from_start=rospy.Duration(0.0)),
-        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(2.0)), 
-        JointTrajectoryPoint(positions=Q2, velocities=[0]*6, time_from_start=rospy.Duration(3.0)),
-        JointTrajectoryPoint(positions=Q3, velocities=[0]*6, time_from_start=rospy.Duration(6.0))]
+        JointTrajectoryPoint(positions=HQ1, velocities=[0]*6, time_from_start=rospy.Duration(2.0)), 
+        JointTrajectoryPoint(positions=HQ2, velocities=[0]*6, time_from_start=rospy.Duration(3.0)),
+        JointTrajectoryPoint(positions=HQ3, velocities=[0]*6, time_from_start=rospy.Duration(6.0))]
     client.send_goal(g)
     rospy.loginfo("Moved arm to home position")
     try:
