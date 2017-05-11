@@ -117,25 +117,17 @@ NUMBER_OF_JOINTS = 0
 JOINT_LIMIT_RADIANS = 2
 INDIVIDUAL_JOINT_CONTROL = 4
 
+# Ignores anything with a greater then 3 hz frequency
 def update_joint_selector():
     global CURRENT_JOINT_CONTROL
-    global NUMBER_OF_JOINTS
-    global INDIVIDUAL_JOINT_CONTROL
-    global CONTROL_MODE
-    global LEFT_ARM_CONTROL
-    global interpreter
-    group = interpreter.get_active_group()
-
-    NUMBER_OF_JOINTS = len(group.get_joints())
-
     if CURRENT_JOINT_CONTROL is None:
         CURRENT_JOINT_CONTROL = 0
-    if CURRENT_JOINT_CONTROL is 0:
-        CURRENT_JOINT_CONTROL += 1    
-        if CURRENT_JOINT_CONTROL >= len(group.get_joints()):
+    if CURRENT_JOINT_CONTROL >= 0:
+        CURRENT_JOINT_CONTROL = CURRENT_JOINT_CONTROL + 1    
+        if CURRENT_JOINT_CONTROL >= 6:
             CURRENT_JOINT_CONTROL = None
 
-    rospy.loginfo("Currently controlling joint: " + group.get_joints()[CURRENT_JOINT_CONTROL])
+    rospy.loginfo("Currently controlling joint: " + str(CURRENT_JOINT_CONTROL))
 
 def vibrate_controller():
     rospy.loginfo("Outside of joint limits. Try moving it in the other direction")    
@@ -184,10 +176,10 @@ def move_selected_joint(direction=1):
     g.trajectory = JointTrajectory()
     g.trajectory.joint_names = JOINTS
     g.trajectory.points = [
-        JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0]*6, time_from_start=rospy.Duration(0.0)),
-        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(2.0)) ]
+        JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0.3]*6, time_from_start=rospy.Duration(0.0)),
+        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(1.5)) ]
     client.send_goal(g)
-    rospy.loginfo("Moved arm to home position")
+    rospy.loginfo("Moving joint " + group.get_joints()[CURRENT_JOINT_CONTROL] + " to new position at " + str(updated_position))
     try:
         client.wait_for_result()
     except KeyboardInterrupt:
@@ -442,7 +434,8 @@ def joy_callback(msg):
         move_home()
         return
 
-    if buttons[3]:
+    a = msg.header.seq % 7
+    if buttons[3] and (a == 0):
         update_joint_selector()
 
     if dpad_left:
