@@ -126,7 +126,7 @@ def update_joint_selector():
     global CURRENT_JOINT_CONTROL
     if CURRENT_JOINT_CONTROL is None:
         CURRENT_JOINT_CONTROL = 0
-    if CURRENT_JOINT_CONTROL >= 0:
+    elif CURRENT_JOINT_CONTROL >= 0:
         CURRENT_JOINT_CONTROL = CURRENT_JOINT_CONTROL + 1    
         if CURRENT_JOINT_CONTROL >= 6:
             CURRENT_JOINT_CONTROL = None
