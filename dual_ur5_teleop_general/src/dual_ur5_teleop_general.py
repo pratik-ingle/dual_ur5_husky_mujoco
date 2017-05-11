@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+#
 # Software License Agreement (BSD License)
 #
 # Copyright (c) 2017, Clearpath Robotics, Inc.
@@ -143,7 +143,7 @@ def move_selected_joint(direction=1):
     # Increment that joint position. If its above the limits, do not move it. Instead, vibrate the controller.
     global JOINT_LIMIT_RADIANS
     global interpreter
-    increment = 0.1 * direction
+    increment = 0.2 * direction
     group = interpreter.get_active_group()
     global left_arm_client
     global right_arm_client
@@ -181,7 +181,7 @@ def move_selected_joint(direction=1):
     g.trajectory.joint_names = JOINTS
     g.trajectory.points = [
         JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0]*6, time_from_start=rospy.Duration(0.0)),
-        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(0.6)) ]
+        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(1.3)) ]
     client.send_goal(g)
     rospy.loginfo("Moving joint " + group.get_joints()[CURRENT_JOINT_CONTROL] + " to new position at " + str(updated_position))
     try:
