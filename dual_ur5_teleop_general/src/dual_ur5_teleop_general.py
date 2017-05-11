@@ -180,8 +180,8 @@ def move_selected_joint(direction=1):
     g.trajectory = JointTrajectory()
     g.trajectory.joint_names = JOINTS
     g.trajectory.points = [
-        JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0.3]*6, time_from_start=rospy.Duration(0.0)),
-        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(1.5)) ]
+        JointTrajectoryPoint(positions=group.get_current_joint_values(), velocities=[0]*6, time_from_start=rospy.Duration(0.0)),
+        JointTrajectoryPoint(positions=Q1, velocities=[0]*6, time_from_start=rospy.Duration(0.6)) ]
     client.send_goal(g)
     rospy.loginfo("Moving joint " + group.get_joints()[CURRENT_JOINT_CONTROL] + " to new position at " + str(updated_position))
     try:
