@@ -143,6 +143,8 @@ Dual UR5 Teleop General Controller Mappings:
 Preface: This teleoperation uses MoveIt! to move the arms around. You may want to configure and tweak your MoveIt! settings inside the husky_dual_ur5_moveit_config package to better suit your research needs and your research environment. Things of note should be: setting the ground plane, setting padding for the obstacles/the arms, joint limits and joint speeds/accelerations, and what type of planning library.
 
 
+Regular arm control mode:
+
     Press Left Trigger to enter "Left Arm" control mode. This will make all movements of the joysticks correspond to left arm movement.
     Press Right Trigger to enter "Right Arm" control mode. This will make all movements of the joystick correspond to the right arm movement.
     While in the respective arm control mode, each joystick direction will move the robot's end effector 5cm in the specified direction.
@@ -157,12 +159,25 @@ Preface: This teleoperation uses MoveIt! to move the arms around. You may want t
 
 Tips and tricks: Note, the arm may "flail" and "whip" around if the specified direction is outside its current joint limit motion ranges. In doing so, unless you have the ground plane added in MoveIt, it MAY plan and execute through the ground. The arm will e-stop itself however, but always be careful, run on low speed, have RViz open to see the workspace, and have your hand on the e-stop at all times! You are responsible for any damage done to the arms or grippers, and not Clearpath Robotics.
 
+Gripper control mode:
 
     Press "B" to enter Gripper control mode. This will make all joystick movements correspond to the grippers. They are:
     Right joystick left: Rotate left
     Right joystick right: Rotate right
     Press the Left Bumper to open and close the left gripper.
     Press the Right bumper to open and close the right gripper.
+    
+Individual Joint Control Mode:
+
+While having the left or right arm selected using the left and right triggers respectively, you can press "Y" on the controller to move up the joint chain, and "X" to move down the joint chain. What this will do is allow you to control each joint of the arm individually using the right joystick. Moving the right joystick left or right will rotate that joint in its respective direction by a set step amount. These can be modified by editing the script. 
+
+PTU Control Mode:
+
+By using the DPad, you can control the direction and movement of the PTU. DPAD left  will move it left. Dpad UP will move it up. Dpad DOWN will move it down. And DPAD right will move it right a set step amount.
+
+Home positions:
+
+Depending on which arm you have selected, you can move it to its home position by pressing the "back" button on the controller. This will rest the arm on top of the robot and prepare it for movement or packing. Please stand clear as it stretches out about 4 feet and moves rapidly. It will e-stop immediately if it notices anything out of the normal.
 
 
 usage of the ptu:
