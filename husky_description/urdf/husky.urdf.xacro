@@ -214,34 +214,33 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     </xacro:if>
 
   </xacro:macro>
-  
    <!-- Collision prevention boxes to prevent hitting the cables -->
   <link name="l_gripper_protection_box">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0.04 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.18 0.10 0.07" rpy="0 0 0" />
+        <box size="0.09 0.10 0.07" rpy="0 0 0" />
       </geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0.40" rpy="0 0 0" />
+      <origin xyz="0.04 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.18 0.10 0.07" />
+        <box size="0.09 0.10 0.07" />
       </geometry>
     </collision>
   </link>
   <!-- Collision prevention boxes to prevent hitting the cables -->
   <link name="r_gripper_protection_box">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0.04 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.18 0.10 0.07" rpy="0 0 0" />
+        <box size="0.09 0.10 0.07" rpy="0 0 0" />
       </geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0.40" rpy="0 0 0" />
+      <origin xyz="0.04 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.18 0.10 0.07" />
+        <box size="0.09 0.10 0.07" />
       </geometry>
     </collision>
   </link>
