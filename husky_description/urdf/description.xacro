@@ -24,14 +24,53 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <robot name="husky" xmlns:xacro="http://ros.org/wiki/xacro">
-
   <xacro:arg name="dual_ur5_enabled" default="$(optenv HUSKY_DUAL_UR5_ENABLED true)" />
   <xacro:arg name="laser_enabled" default="false" />
   <xacro:arg name="ur5_enabled" default="false" />
   <xacro:arg name="kinect_enabled" default="false" />
-  <xacro:arg name="robotiq_grippers_enabled" default="$(optenv ROBOTIQ_GRIPPERS_ENABLED false)" />
- 
-  <xacro:include filename="$(find husky_description)/urdf/dual_arm_husky.urdf.xacro" />
+  <xacro:arg name="robotiq_grippers_enabled" default="$(optenv ROBOTIQ_GRIPPERS_ENABLED true)" />
+  <xacro:include filename="$(find husky_description)/urdf/husky.urdf.xacro" />
   <xacro:husky_robot />
-
+  <!-- Collision prevention boxes to prevent hitting the cables -->
+  <link name="l_gripper_protection_box">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.18 0.10 0.07" rpy="0 0 0" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.18 0.10 0.07" />
+      </geometry>
+    </collision>
+  </link>
+  <!-- Collision prevention boxes to prevent hitting the cables -->
+  <link name="r_gripper_protection_box">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.18 0.10 0.07" rpy="0 0 0" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.18 0.10 0.07" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="l_gripper_protection" type="fixed">
+    <parent link="l_robotiq_hand" />
+    <child link="l_gripper_protection_box" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+  <!-- Attach the boxes to the gripper to prevent collisions -->
+  <joint name="r_gripper_protection" type="fixed">
+    <parent link="r_robotiq_hand" />
+    <child link="r_gripper_protection_box" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
 </robot>
+
