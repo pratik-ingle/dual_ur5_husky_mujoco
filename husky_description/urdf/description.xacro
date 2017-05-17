@@ -31,46 +31,5 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <xacro:arg name="robotiq_grippers_enabled" default="$(optenv ROBOTIQ_GRIPPERS_ENABLED true)" />
   <xacro:include filename="$(find husky_description)/urdf/husky.urdf.xacro" />
   <xacro:husky_robot />
-  <!-- Collision prevention boxes to prevent hitting the cables -->
-  <link name="l_gripper_protection_box">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <box size="0.18 0.10 0.07" rpy="0 0 0" />
-      </geometry>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <box size="0.18 0.10 0.07" />
-      </geometry>
-    </collision>
-  </link>
-  <!-- Collision prevention boxes to prevent hitting the cables -->
-  <link name="r_gripper_protection_box">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <box size="0.18 0.10 0.07" rpy="0 0 0" />
-      </geometry>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <box size="0.18 0.10 0.07" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="l_gripper_protection" type="fixed">
-    <parent link="l_robotiq_hand" />
-    <child link="l_gripper_protection_box" />
-    <origin xyz="0 0 0" rpy="0 0 0" />
-  </joint>
-  <!-- Attach the boxes to the gripper to prevent collisions -->
-  <joint name="r_gripper_protection" type="fixed">
-    <parent link="r_robotiq_hand" />
-    <child link="r_gripper_protection_box" />
-    <origin xyz="0 0 0" rpy="0 0 0" />
-  </joint>
 </robot>
 
