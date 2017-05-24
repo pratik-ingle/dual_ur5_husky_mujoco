@@ -2453,5 +2453,6 @@
 <disable_collisions link1="r_finger_middle_link_proximal_actuating_hinge" link2="r_gripper_protection_box" reason="Adjacent" />
 <disable_collisions link1="r_gripper_protection_box" link2="r_palm" reason="Adjacent" />
 <disable_collisions link1="l_finger_1_link_median_actuating_hinge" link2="l_gripper_protection_box" reason="Adjacent" />
-
+<disable_collisions link1="r_finger_middle_link_2" link2="r_gripper_protection_box" reason="Adjacent" />
+    
 </robot>
