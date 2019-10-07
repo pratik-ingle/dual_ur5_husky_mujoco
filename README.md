@@ -110,10 +110,14 @@ Usually, we use the xml file.
 mujoco200/bin$ ./simulate /path/to/model.xml
 ```   
 
-
+Here is the visual version:
 ![dual_ur5_husky_mujco_visualization](images/dual_ur5_husky_mujoco_visual.png)
+
+Here is the collision version:
 ![dual_ur5_husky_mujoco_collision](images/dual_ur5_husky_mujoco_collision.png)
 
+Here is the video:
+![dual_ur5_husky_mujco_visual](images/dual_ur5_husky_mujco_visual.gif)
 
 
 
