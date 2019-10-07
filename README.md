@@ -111,14 +111,13 @@ mujoco200/bin$ ./simulate /path/to/model.xml
 ```   
 
 Here is the visual version:
-![dual_ur5_husky_mujco_visualization](images/dual_ur5_husky_mujoco_visual.png)
+![dual_ur5_husky_mujoco_visualization](images/dual_ur5_husky_mujoco_visual.png)
 
 Here is the collision version:
 ![dual_ur5_husky_mujoco_collision](images/dual_ur5_husky_mujoco_collision.png)
 
 Here is the video:
-![dual_ur5_husky_mujco_visual](images/dual_ur5_husky_mujoco_visual.gif)
+![dual_ur5_husky_mujoco_visual](images/dual_ur5_husky_mujoco_visual.gif)
 
-
-
-    
+Add light and some other objects:
+![dual_ur5_husky_mujoco_add_light](images/dual_ur5_husky_mujoco_add_light.png)   
