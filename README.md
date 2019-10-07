@@ -117,7 +117,7 @@ Here is the collision version:
 ![dual_ur5_husky_mujoco_collision](images/dual_ur5_husky_mujoco_collision.png)
 
 Here is the video:
-![dual_ur5_husky_mujco_visual](images/dual_ur5_husky_mujco_visual.gif)
+![dual_ur5_husky_mujco_visual](images/dual_ur5_husky_mujoco_visual.gif)
 
 
 
