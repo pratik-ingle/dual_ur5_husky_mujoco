@@ -64,20 +64,51 @@ Note that collision geoms are placed in geom group 0, while visual geoms are pla
   </mujoco>
 ```
 
-
-
 - check urdf file
+
+If you have the xacro file, you need to convert it to the urdf file:
+```bash
+rosrun xacro xacro --inorder model.xacro > model.urdf
+```
+Then use this to check the urdf file. If there are errors, check you xacro file again.
+```bash
+check_urdf model.urdf
+````
+You can also get the kinetic tree to look the detals.
+
+Visualize the urdf file in RViz.
+```bash
+roslaunch urdf_tutorial display.launch model:=path/to/your/urdf/file
+```
 
 
 - convert urdf to mjcf file
 
+In the path ~/mujoco/mujoco200/bin, you can run command below:
+```bash
+$./compile /path/to/model.urdf /path/to/model.mjb
+$./compile /path/to/model.urdf /path/to/model.txt
+$./compile /path/to/model.urdf /path/to/model.xml
+```
+Helper function:
+```bash
+$./compile
+ Usage: compile infile outfile
+  infile can be in mjcf, urdf, mjb format
+  outfile can be in mjcf, mjb, txt format
+```
+Usually, we use the xml file.
 
 - change the raw xml file to adapt the mujoco
 
 [Here](https://github.com/openai/mujoco-py/issues/216) introduces some related thing to change.
 
 
+- test your mujoco model file
 
+```bash
+mujoco200/bin$ ./simulate /path/to/model.xml
+```
 
 
 
