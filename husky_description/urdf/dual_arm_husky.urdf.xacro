@@ -84,7 +84,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://husky_description/meshes/base_link.dae"/>
+        <mesh filename="package://husky_description/meshes/base_link.stl"/>
       </geometry>
     </visual>
     <collision>
@@ -141,7 +141,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://husky_description/meshes/wheel.dae"/>
+        <mesh filename="package://husky_description/meshes/wheel.stl"/>
       </geometry>
     </visual>
     <collision>
@@ -182,7 +182,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://husky_description/meshes/wheel.dae"/>
+        <mesh filename="package://husky_description/meshes/wheel.stl"/>
       </geometry>
     </visual>
     <collision>
@@ -223,7 +223,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://husky_description/meshes/wheel.dae"/>
+        <mesh filename="package://husky_description/meshes/wheel.stl"/>
       </geometry>
     </visual>
     <collision>
@@ -264,7 +264,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://husky_description/meshes/wheel.dae"/>
+        <mesh filename="package://husky_description/meshes/wheel.stl"/>
       </geometry>
     </visual>
     <collision>
@@ -301,7 +301,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://husky_description/meshes/top_chassis.dae"/>
+        <mesh filename="package://husky_description/meshes/top_chassis.stl"/>
       </geometry>
     </visual>
   </link>
@@ -314,7 +314,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="front_bumper_link">
     <visual>
       <geometry>
-        <mesh filename="package://husky_description/meshes/bumper.dae"/>
+        <mesh filename="package://husky_description/meshes/bumper.stl"/>
       </geometry>
     </visual>
   </link>
@@ -328,7 +328,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="rear_bumper_link">
     <visual>
       <geometry>
-        <mesh filename="package://husky_description/meshes/bumper.dae"/>
+        <mesh filename="package://husky_description/meshes/bumper.stl"/>
       </geometry>
     </visual>
   </link>
@@ -343,13 +343,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://husky_description/meshes/dual_arm_bulkhead.dae"/>
+        <mesh filename="package://husky_description/meshes/dual_arm_bulkhead.stl"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://husky_description/meshes/dual_arm_bulkhead.dae"/>
+        <mesh filename="package://husky_description/meshes/dual_arm_bulkhead.stl"/>
       </geometry>
     </collision>
   </link>
@@ -503,7 +503,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="l_ur5_arm_base_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/base.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/base.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -531,7 +531,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="l_ur5_arm_shoulder_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/shoulder.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/shoulder.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -559,7 +559,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="l_ur5_arm_upper_arm_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/upperarm.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/upperarm.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -587,7 +587,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="l_ur5_arm_forearm_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/forearm.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/forearm.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -615,7 +615,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="l_ur5_arm_wrist_1_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/wrist1.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/wrist1.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -643,7 +643,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="l_ur5_arm_wrist_2_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/wrist2.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/wrist2.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -671,7 +671,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="l_ur5_arm_wrist_3_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/wrist3.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/wrist3.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -777,7 +777,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="r_ur5_arm_base_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/base.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/base.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -805,7 +805,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="r_ur5_arm_shoulder_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/shoulder.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/shoulder.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -833,7 +833,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="r_ur5_arm_upper_arm_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/upperarm.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/upperarm.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -861,7 +861,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="r_ur5_arm_forearm_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/forearm.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/forearm.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -889,7 +889,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="r_ur5_arm_wrist_1_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/wrist1.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/wrist1.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -917,7 +917,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="r_ur5_arm_wrist_2_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/wrist2.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/wrist2.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -945,7 +945,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <link name="r_ur5_arm_wrist_3_link">
     <visual>
       <geometry>
-        <mesh filename="package://ur_description/meshes/ur5/visual/wrist3.dae"/>
+        <mesh filename="package://ur_description/meshes/ur5/visual/wrist3.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -1059,7 +1059,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- Origin of this mesh is the focal point of the LIDAR. -->
-        <mesh filename="package://lms1xx/meshes/sick-lms1xx.dae"/>
+        <mesh filename="package://lms1xx/meshes/sick-lms1xx.stl"/>
       </geometry>
     </visual>
     <collision>
@@ -1112,7 +1112,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="-1.5707 0 -1.5707" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://pointgrey_camera_description/meshes/pointgrey_bumblebee2.dae"/>
+        <mesh filename="package://pointgrey_camera_description/meshes/pointgrey_bumblebee2.stl"/>
       </geometry>
     </visual>
     <collision>
@@ -1214,14 +1214,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotiq_force_torque_sensor/meshes/visual/robotiq_fts300.dae"/>
+        <mesh filename="package://robotiq_force_torque_sensor/meshes/visual/robotiq_fts300.stl"/>
       </geometry>
       <material name="black"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotiq_force_torque_sensor/meshes/collision/robotiq_fts300.dae"/>
+        <mesh filename="package://robotiq_force_torque_sensor/meshes/collision/robotiq_fts300.stl"/>
       </geometry>
     </collision>
   </link>
@@ -1255,14 +1255,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotiq_force_torque_sensor/meshes/visual/robotiq_fts300.dae"/>
+        <mesh filename="package://robotiq_force_torque_sensor/meshes/visual/robotiq_fts300.stl"/>
       </geometry>
       <material name="black"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotiq_force_torque_sensor/meshes/collision/robotiq_fts300.dae"/>
+        <mesh filename="package://robotiq_force_torque_sensor/meshes/collision/robotiq_fts300.stl"/>
       </geometry>
     </collision>
   </link>
