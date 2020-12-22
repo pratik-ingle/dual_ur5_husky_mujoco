@@ -137,3 +137,21 @@ Okay we have got a initial mujoco model. However, if you want to use the model i
 
 dual_ur5_husky_mujoco is open-sourced under the Apache-2.0 license. See the
 [LICENSE](./LICENSE) file for details.
+
+## Citation
+ Please cite the paper in your publications if it helps your research:
+
+ ```BibTeX
+@Article{s20030939,
+AUTHOR = {Wang, Cong and Zhang, Qifeng and Tian, Qiyan and Li, Shuo and Wang, Xiaohui and Lane, David and Petillot, Yvan and Wang, Sen},
+TITLE = {Learning Mobile Manipulation through Deep Reinforcement Learning},
+JOURNAL = {Sensors},
+VOLUME = {20},
+YEAR = {2020},
+NUMBER = {3},
+ARTICLE-NUMBER = {939},
+URL = {https://www.mdpi.com/1424-8220/20/3/939},
+ISSN = {1424-8220},
+DOI = {10.3390/s20030939}
+}
+ ```
