@@ -5,7 +5,7 @@
 
 We will create a dual ur5 husky mujoco model based on original dual-ur5-husky reps. For the Gazebo demo and some related setting, you can find [old repo](https://github.com/DualUR5Husky/husky) and [new repo](https://github.com/husky/husky_manipulation/blob/kinetic-devel/husky_ur_description/urdf/husky_dual_ur5_description.urdf.xacro). We use old repo in this tutorial.
 
-Here is the official introduction about URDF in mumjoco [here](http://www.mujoco.org/book/modeling.html#CURDF), we can know that urdf is different from mujoco mjcf file.
+Here is the official introduction about URDF in mujoco [here](http://www.mujoco.org/book/modeling.html#CURDF), we can know that urdf is different from mujoco mjcf file.
 
 ## Step1: get ROS packages
 What we need for the mojuco model is just the stl file and urdf file. So first, download all the needed packages as follows:
